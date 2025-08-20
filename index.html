@@ -5,247 +5,112 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Perpustakaan Lubangsa</title>
   <link rel="icon" type="image/png" href="logo.png" />
-
+  <!-- Menggunakan Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Menggunakan Font Inter dari Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome untuk ikon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    :root {
-      --main-color: #00bcd4;
-      --dark-color: #008ba3;
-      --text-color: #333;
-      --light-bg: #f0f2f5;
-      --container-bg: #ffffff;
-      --shadow-light: rgba(0, 0, 0, 0.05);
-      --shadow-medium: rgba(0, 0, 0, 0.1);
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--light-bg);
-      color: var(--text-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Mengatur font default untuk seluruh halaman */
+    body {
+      font-family: 'Inter', sans-serif;
+      /* Warna gelap awal untuk body, akan diganti oleh JS */
+      background-color: #1a202c; 
+      transition: background-color 2s ease-in-out; /* Animasi transisi warna background */
+      position: relative; 
+      overflow-x: hidden; 
       min-height: 100vh;
-      width: 100%;
-      overflow-x: hidden;
-      box-sizing: border-box;
-    }
-
-    *, *::before, *::after {
-      box-sizing: inherit;
-    }
-
-    header {
-      width: 100%;
-      background-color: var(--container-bg);
-      box-shadow: 0 2px 4px var(--shadow-light);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      cursor: pointer;
-      overflow: hidden;
-    }
-
-    .header-logo img {
-      height: 50px;
-      width: auto;
-      max-width: 100%;
-      object-fit: contain;
-      transition: transform 0.3s ease;
-      display: block;
-    }
-
-    .header-left:hover .header-logo img {
-      transform: scale(1.05);
-    }
-
-    .header-title h2 {
-      margin: 0;
-      color: var(--main-color);
-      font-size: 1.5rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .container {
-      flex-grow: 1;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      max-width: 900px;
-      padding: 2rem 1rem;
-      margin: 0 auto;
-      text-align: center;
+    }
+    /* Kustomisasi scrollbar untuk tampilan yang lebih halus */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #333; /* Warna track scrollbar gelap */
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #666; /* Warna thumb scrollbar gelap */
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #888;
     }
 
-    h1 {
-      display: none;
-    }
-
-    #links-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 1.5rem;
-      width: 100%;
-      padding: 20px 0;
-    }
-
-    .link-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      position: relative;
-      max-width: 120px;
-      margin: 0 auto;
-    }
-
-    .link-item:hover {
-      transform: translateY(-5px);
-    }
-
-    .link-icon {
-      width: 80px;
-      height: 80px;
-      background-color: var(--container-bg);
-      border-radius: 18px;
-      box-shadow: 0 4px 10px var(--shadow-light);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      transition: all 0.2s ease;
-      margin-bottom: 10px;
-    }
-
-    .link-icon img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-    }
-
-    .link-item:hover .link-icon {
-      box-shadow: 0 6px 15px var(--shadow-medium);
-    }
-
-    .link-item span {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-color);
-      text-align: center;
-      word-wrap: break-word;
-      width: 100%;
-    }
-
-    .link-item .delete-btn {
-      background-color: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 0.8rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    .link-item:hover .delete-btn {
-      opacity: 1;
-    }
-
-    #form-container {
-      background-color: var(--container-bg);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px var(--shadow-light);
-      max-width: 500px;
-      width: 100%;
-      margin-top: 2rem;
-      display: none;
-    }
-
-    .add-form h2 {
-      margin-top: 0;
-      color: var(--dark-color);
-    }
-
-    .add-form input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    .add-form button {
-      width: 100%;
-      padding: 12px;
-      background-color: var(--main-color);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .add-form button:hover {
-      background-color: var(--dark-color);
-    }
+    /* Gaya untuk animasi gelombang dihapus */
+    /* Keyframes untuk animasi pergerakan gelombang dihapus */
   </style>
 </head>
 
-<body>
-  <header>
-    <div class="header-left">
-      <div class="header-logo">
-        <img src="logo.png" alt="Logo Perpustakaan" />
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
+  <!-- Header Aplikasi -->
+  <header class="w-full bg-gray-800 shadow-xl py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center gap-4 cursor-pointer" id="header-left">
+      <div class="flex-shrink-0">
+        <img src="logo.png" alt="Logo Perpustakaan" class="h-12 w-auto max-w-full object-contain rounded-full transition-transform duration-300 ease-in-out hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/128x128/00bcd4/ffffff?text=L';"/>
       </div>
-      <div class="header-title">
-        <h2>Perpustakaan Lubangsa</h2>
+      <div class="flex-grow">
+        <h2 class="text-2xl font-semibold text-cyan-400 whitespace-nowrap overflow-hidden text-ellipsis">Perpustakaan Lubangsa</h2>
       </div>
     </div>
   </header>
 
-  <div class="container">
-    <div id="links-container"></div>
+  <!-- Konten Utama: Daftar Pintasan -->
+  <main class="flex-grow container mx-auto px-4 py-8 flex flex-col items-center z-20">
+    <h1 class="text-3xl font-bold text-gray-200 mb-8 hidden">Daftar Pintasan</h1>
+    
+    <!-- Container untuk pintasan -->
+    <section id="links-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 w-full max-w-4xl p-5 bg-gray-800 rounded-xl shadow-2xl"></section>
 
-    <div id="form-container">
-      <div class="add-form">
-        <h2>Tambah Pintasan</h2>
-        <input type="text" id="link-title" placeholder="Nama Pintasan" />
-        <input type="text" id="link-url" placeholder="URL Lengkap (contoh: https://www.google.com)" />
-        <button id="add-link-btn">Tambahkan</button>
+    <!-- Tombol untuk membuka modal tambah pintasan -->
+    <button id="open-add-modal-btn" class="mt-8 px-6 py-3 bg-cyan-700 text-white rounded-full shadow-lg hover:bg-cyan-800 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50">
+      <i class="fas fa-plus mr-2"></i> Tambah Pintasan Baru
+    </button>
+  </main>
+
+  <!-- Modal Tambah Pintasan -->
+  <div id="add-link-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md transform transition-all duration-300 scale-95 opacity-0" id="add-link-modal-content">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-2xl font-semibold text-cyan-400">Tambah Pintasan Baru</h2>
+        <button class="text-gray-400 hover:text-gray-200 text-3xl leading-none" id="close-add-modal-btn">&times;</button>
+      </div>
+      <div class="space-y-4">
+        <input type="text" id="link-title" placeholder="Nama Pintasan (contoh: Google)" class="w-full p-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 bg-gray-700 text-gray-100 placeholder-gray-400 focus:border-transparent outline-none transition duration-200" />
+        <input type="url" id="link-url" placeholder="URL Lengkap (contoh: https://www.google.com)" class="w-full p-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 bg-gray-700 text-gray-100 placeholder-gray-400 focus:border-transparent outline-none transition duration-200" />
+        <button id="add-link-btn" class="w-full py-3 bg-cyan-700 text-white font-bold rounded-lg hover:bg-cyan-800 transition duration-300 ease-in-out shadow-md">
+          Tambahkan Pintasan
+        </button>
+        <p id="add-form-error" class="text-red-400 text-sm mt-2 hidden">Nama dan URL tidak boleh kosong!</p>
       </div>
     </div>
   </div>
 
+  <!-- Modal Konfirmasi Hapus -->
+  <div id="delete-confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0" id="delete-confirm-modal-content">
+      <h2 class="text-xl font-semibold text-gray-100 mb-4">Konfirmasi Hapus</h2>
+      <p id="delete-confirm-message" class="text-gray-300 mb-6"></p>
+      <div class="flex justify-end gap-3">
+        <button id="cancel-delete-btn" class="px-5 py-2 bg-gray-700 text-gray-100 rounded-lg hover:bg-gray-600 transition duration-200">Batal</button>
+        <button id="confirm-delete-btn" class="px-5 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 transition duration-200">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container untuk animasi gelombang dihapus -->
+
+  <!-- Firebase JavaScript SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
   <script>
+    // Konfigurasi Firebase Anda
     const firebaseConfig = {
       apiKey: "AIzaSyBcsg2DLPZyEtbElkVXdKU-yyTjLYkLU7o",
       authDomain: "index-9a8b8.firebaseapp.com",
@@ -255,52 +120,108 @@
       appId: "1:509947707597:web:3beafab585430be322a984"
     };
 
+    // Inisialisasi Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    const linksRef = database.ref('links');
+    const linksRef = database.ref('links'); // Referensi ke node 'links' di Realtime Database
 
-    const headerLeft = document.querySelector('.header-left');
+    // Dapatkan elemen DOM
     const linksContainer = document.getElementById('links-container');
+    const openAddModalBtn = document.getElementById('open-add-modal-btn');
+
+    // Elemen modal tambah pintasan
+    const addLinkModal = document.getElementById('add-link-modal');
+    const addLinkModalContent = document.getElementById('add-link-modal-content');
+    const closeAddModalBtn = document.getElementById('close-add-modal-btn');
     const linkTitleInput = document.getElementById('link-title');
     const linkUrlInput = document.getElementById('link-url');
     const addLinkBtn = document.getElementById('add-link-btn');
-    const formContainer = document.getElementById('form-container');
+    const addFormError = document.getElementById('add-form-error');
 
+    // Elemen modal konfirmasi hapus
+    const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+    const deleteConfirmModalContent = document.getElementById('delete-confirm-modal-content');
+    const deleteConfirmMessage = document.getElementById('delete-confirm-message');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+    let currentLinkKeyToDelete = null; // Menyimpan kunci pintasan yang akan dihapus
+
+    // Fungsi untuk membuka modal
+    function openModal(modalElement, contentElement) {
+      modalElement.classList.remove('hidden');
+      setTimeout(() => {
+        contentElement.classList.remove('opacity-0', 'scale-95');
+        contentElement.classList.add('opacity-100', 'scale-100');
+      }, 10); // Sedikit penundaan untuk transisi
+    }
+
+    // Fungsi untuk menutup modal
+    function closeModal(modalElement, contentElement) {
+      contentElement.classList.remove('opacity-100', 'scale-100');
+      contentElement.classList.add('opacity-0', 'scale-95');
+      setTimeout(() => {
+        modalElement.classList.add('hidden');
+      }, 300); // Sesuaikan dengan durasi transisi CSS
+    }
+
+    /**
+     * Fungsi untuk menghasilkan warna HSL unik berdasarkan string.
+     * Digunakan untuk memberikan warna latar belakang yang berbeda untuk setiap ikon pintasan.
+     * @param {string} str String input (misalnya, judul pintasan).
+     * @returns {string} String warna HSL (misalnya, "hsl(120, 70%, 60%)").
+     */
+    function generateUniqueColor(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      // Menyesuaikan nilai hue, saturation, dan lightness untuk warna yang menarik
+      const hue = hash % 360; // Hue dari 0 hingga 359
+      const saturation = 70; // Saturation konsisten untuk vibrasi
+      const lightness = 60;  // Lightness konsisten untuk visibilitas yang baik
+      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    }
+
+    /**
+     * Membuat elemen pintasan HTML.
+     * @param {string} key Kunci unik dari Firebase Realtime Database.
+     * @param {string} title Judul pintasan.
+     * @param {string} url URL pintasan.
+     */
     function createLinkElement(key, title, url) {
       const linkItem = document.createElement('a');
-      linkItem.className = 'link-item';
+      linkItem.className = 'link-item flex flex-col items-center text-decoration-none transition-all duration-200 relative max-w-xs mx-auto group';
       linkItem.href = url;
-      linkItem.target = "_blank";
+      linkItem.target = "_blank"; // Buka di tab baru
 
+      // Ikon pintasan (sekarang menggunakan huruf pertama judul dengan warna unik)
       const linkIcon = document.createElement('div');
-      linkIcon.className = 'link-icon';
+      const uniqueColor = generateUniqueColor(title);
+      linkIcon.style.backgroundColor = uniqueColor; // Mengatur warna latar belakang unik
+      linkIcon.style.color = 'white'; // Mengatur warna teks ikon (agar kontras)
+      linkIcon.textContent = title.charAt(0).toUpperCase(); // Menampilkan huruf pertama yang dikapitalisasi
+      linkIcon.className = 'link-icon w-20 h-20 sm:w-24 sm:h-24 rounded-2xl shadow-md flex justify-center items-center overflow-hidden transition-all duration-200 mb-3 group-hover:shadow-lg group-hover:scale-105 text-4xl sm:text-5xl font-bold'; // Ukuran dan gaya teks ikon
 
-      const faviconUrl = `https://s2.googleusercontent.com/s2/favicons?domain=${new URL(url).hostname}&sz=128`;
-      const iconImg = document.createElement('img');
-      iconImg.src = faviconUrl;
-      iconImg.alt = title;
-
-      iconImg.onerror = () => {
-        iconImg.src = 'https://via.placeholder.com/128/00bcd4/ffffff?text=' + title.charAt(0).toUpperCase();
-      };
-
-      linkIcon.appendChild(iconImg);
-
+      // Judul pintasan
       const linkSpan = document.createElement('span');
       linkSpan.textContent = title;
+      linkSpan.className = 'text-sm sm:text-base font-medium text-gray-200 text-center break-words w-full';
 
+      // Tombol hapus
       const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = '×';
+      deleteBtn.className = 'delete-btn absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-lg cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md hover:bg-red-600 focus:outline-none';
+      deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; // Ikon silang Font Awesome
 
       deleteBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (confirm(`Yakin ingin menghapus pintasan "${title}"?`)) {
-          linksRef.child(key).remove();
-        }
+        event.preventDefault(); // Mencegah navigasi ke URL
+        event.stopPropagation(); // Mencegah event klik menyebar ke linkItem
+        currentLinkKeyToDelete = key; // Simpan kunci pintasan yang akan dihapus
+        deleteConfirmMessage.textContent = `Anda yakin ingin menghapus pintasan "${title}"?`;
+        openModal(deleteConfirmModal, deleteConfirmModalContent);
       });
 
+      // Gabungkan elemen-elemen
       linkItem.appendChild(linkIcon);
       linkItem.appendChild(linkSpan);
       linkItem.appendChild(deleteBtn);
@@ -308,8 +229,9 @@
       linksContainer.appendChild(linkItem);
     }
 
+    // Mendengarkan perubahan data dari Firebase Realtime Database
     linksRef.on('value', (snapshot) => {
-      linksContainer.innerHTML = '';
+      linksContainer.innerHTML = ''; // Kosongkan container sebelum mengisi ulang
       snapshot.forEach((childSnapshot) => {
         const key = childSnapshot.key;
         const data = childSnapshot.val();
@@ -317,27 +239,95 @@
       });
     });
 
+    // Event listener untuk tombol "Tambah Pintasan Baru"
+    openAddModalBtn.addEventListener('click', () => {
+      openModal(addLinkModal, addLinkModalContent);
+      linkTitleInput.value = ''; // Reset input
+      linkUrlInput.value = '';   // Reset input
+      addFormError.classList.add('hidden'); // Sembunyikan pesan error
+    });
+
+    // Event listener untuk tombol tutup modal tambah
+    closeAddModalBtn.addEventListener('click', () => {
+      closeModal(addLinkModal, addLinkModalContent);
+    });
+
+    // Event listener untuk menambahkan pintasan
     addLinkBtn.addEventListener('click', () => {
       const title = linkTitleInput.value.trim();
       const url = linkUrlInput.value.trim();
 
       if (title && url) {
+        // Validasi URL sederhana
+        try {
+          new URL(url); // Coba membuat objek URL untuk validasi
+        } catch (e) {
+          addFormError.textContent = "URL tidak valid. Pastikan formatnya benar (contoh: https://www.example.com).";
+          addFormError.classList.remove('hidden');
+          return;
+        }
+
         linksRef.push({ title, url }).then(() => {
-          linkTitleInput.value = '';
-          linkUrlInput.value = '';
+          closeModal(addLinkModal, addLinkModalContent); // Tutup modal setelah berhasil
         }).catch(error => {
           console.error("Gagal menambahkan pintasan:", error);
+          addFormError.textContent = "Terjadi kesalahan saat menambahkan pintasan. Silakan coba lagi.";
+          addFormError.classList.remove('hidden');
         });
       } else {
-        alert("Nama dan URL tidak boleh kosong!");
+        addFormError.textContent = "Nama dan URL tidak boleh kosong!";
+        addFormError.classList.remove('hidden');
       }
     });
 
-    headerLeft.addEventListener('click', () => {
-      formContainer.style.display = formContainer.style.display === 'none' || formContainer.style.display === ''
-        ? 'block'
-        : 'none';
+    // Event listener untuk tombol batal di modal konfirmasi hapus
+    cancelDeleteBtn.addEventListener('click', () => {
+      closeModal(deleteConfirmModal, deleteConfirmModalContent);
+      currentLinkKeyToDelete = null; // Reset kunci
     });
+
+    // Event listener untuk tombol konfirmasi hapus
+    confirmDeleteBtn.addEventListener('click', () => {
+      if (currentLinkKeyToDelete) {
+        linksRef.child(currentLinkKeyToDelete).remove().then(() => {
+          closeModal(deleteConfirmModal, deleteConfirmModalContent); // Tutup modal setelah berhasil
+          currentLinkKeyToDelete = null; // Reset kunci
+        }).catch(error => {
+          console.error("Gagal menghapus pintasan:", error);
+          // Tambahkan notifikasi error ke pengguna jika diperlukan
+        });
+      }
+    });
+
+    // Event listener untuk header-left, untuk compatibility dengan fitur lama toggle form,
+    // namun sekarang hanya membuka modal tambah pintasan
+    document.getElementById('header-left').addEventListener('click', () => {
+        openModal(addLinkModal, addLinkModalContent);
+        linkTitleInput.value = ''; // Reset input
+        linkUrlInput.value = '';   // Reset input
+        addFormError.classList.add('hidden'); // Sembunyikan pesan error
+    });
+
+    // Logika untuk perubahan warna background body secara dinamis
+    const bodyElement = document.body;
+    // Palet warna Cyan + Dark yang akan dirotasi
+    const backgroundColors = [
+      "#083344", // Darker Cyan
+      "#155e75", // Medium Dark Cyan
+      "#0d9488", // Tealish Dark Cyan
+      "#06b6d4"  // Brighter Cyan
+    ];
+    let colorIndex = 0;
+
+    function changeBackgroundColor() {
+      bodyElement.style.backgroundColor = backgroundColors[colorIndex];
+      colorIndex = (colorIndex + 1) % backgroundColors.length;
+    }
+
+    // Panggil fungsi pertama kali dan kemudian setiap 5 detik
+    changeBackgroundColor();
+    setInterval(changeBackgroundColor, 5000); // Ganti warna setiap 5 detik
+
   </script>
 </body>
 </html>
