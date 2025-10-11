@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perpustakaan Lubangsa</title>
-    <link rel="icon" type="image/png" href="logo.png" />
+    <title>Multi-Page Library Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -118,6 +117,13 @@
         
         <div 
             class="nav-icon" 
+            data-target="iframe-jadwal"
+            title="Jadwal Absensi">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+
+        <div 
+            class="nav-icon" 
             data-target="iframe-library"
             title="Pencarian Library">
             <i class="fas fa-search"></i>
@@ -153,6 +159,13 @@
             class="content-frame active" 
             src="https://perpustakaanlubangsa.github.io/absensi/"
             title="Halaman Absensi">
+        </iframe>
+        
+        <iframe 
+            id="iframe-jadwal"
+            class="content-frame" 
+            src="https://perpustakaanlubangsa.github.io/absensi/jadwal"
+            title="Jadwal Absensi">
         </iframe>
 
         <iframe 
