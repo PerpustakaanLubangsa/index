@@ -3,170 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perpustakaan Lubangsa</title>
-    <link rel="icon" type="image/png" href="logo.png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>Dual Page Perpustakaan Lubangsa - Scrollbar Kustom</title>
     <style>
-        /* Modern Color Palette */
-        :root {
-            --color-primary-dark: #2c3e50; /* Navy Blue/Dark Slate */
-            --color-accent-teal: #1abc9c; /* Bright Teal */
-            --color-text-light: white;
-            --color-bg-light: #ecf0f1; /* Light Gray */
+        /* =======================================
+           CSS untuk Kustomisasi Scrollbar (Hanya Bekerja di WebKit: Chrome, Safari, Edge)
+           ======================================= */
+        
+        /* 1. Mengatur lebar scrollbar */
+        .iframe-kiri::-webkit-scrollbar,
+        .iframe-kanan::-webkit-scrollbar {
+            width: 8px; /* Mengatur lebar scrollbar vertikal menjadi 8 piksel (lebih kecil) */
+            height: 8px; /* Mengatur tinggi scrollbar horizontal (jika ada) */
+        }
+        
+        /* 2. Mengatur Latar Belakang Track (jalur) scrollbar */
+        .iframe-kiri::-webkit-scrollbar-track,
+        .iframe-kanan::-webkit-scrollbar-track {
+            background: #f1f1f1; /* Latar belakang abu-abu sangat muda */
+            border-radius: 10px;
+        }
+        
+        /* 3. Mengatur Thumb (batang penggulir) scrollbar */
+        .iframe-kiri::-webkit-scrollbar-thumb,
+        .iframe-kanan::-webkit-scrollbar-thumb {
+            background: #aaa; /* Warna abu-abu yang lebih gelap */
+            border-radius: 10px; /* Membuat sudut membulat */
         }
 
-        body {
+        /* 4. Mengatur warna Thumb saat dihover */
+        .iframe-kiri::-webkit-scrollbar-thumb:hover,
+        .iframe-kanan::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Warna menjadi lebih gelap saat kursor diarahkan */
+        }
+
+        /* =======================================
+           CSS Utama Dual-Page
+           ======================================= */
+        body, html {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-            background-color: var(--color-bg-light); 
-        }
-        
-        /* Sidebar Kiri - Dibuat Sempit (Sama dengan Multi Page) */
-        #sidebar-left {
-            width: 50px; 
-            min-width: 50px; 
-            max-width: 60px; 
-            
-            background-color: var(--color-primary-dark); 
-            color: var(--color-text-light);
-            padding: 10px 0;
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
-            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-icon {
-            padding: 15px 0; /* Padding disesuaikan untuk ruang sempit */
-            cursor: pointer;
-            font-size: 20px; /* Ukuran ikon lebih kecil */
-            margin-bottom: 5px; 
-            transition: all 0.3s ease-in-out; 
-            text-align: center;
-            width: 100%; 
-            color: var(--color-text-light); 
-            border-left: 3px solid transparent; /* Border lebih tipis */
-            box-sizing: border-box;
-        }
-
-        /* EFEK HOVER MODERN */
-        .nav-icon:hover {
-            background-color: #34495e; /* Sedikit lebih terang dari dark primary */
-            color: var(--color-accent-teal);
-            transform: translateY(-2px); /* Efek terangkat */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        /* EFEK AKTIF MODERN: Teal Accent */
-        .nav-icon.active {
-            background-color: #2c3e50; 
-            color: var(--color-accent-teal); /* Ikon berwarna Teal */
-            border-left: 3px solid var(--color-accent-teal); /* Indikator Teal cerah */
-            transform: none;
-            box-shadow: none;
-        }
-        
-        /* Area Konten Utama */
-        #main-content {
-            flex-grow: 1; 
+            padding: 0;
             height: 100%;
-            padding: 20px; /* Padding ditingkatkan */
-            position: relative; 
-            background-color: white; 
-            box-sizing: border-box;
         }
 
-        /* Gaya Iframe */
-        .content-frame {
-            position: absolute; 
-            top: 20px; /* Sesuai dengan padding main-content */
-            left: 20px;
-            width: calc(100% - 40px); /* Lebar dikurangi padding ganda */
-            height: calc(100% - 40px); 
-            border: none; /* Hapus border iframe */
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
-            background-color: white; 
-            border-radius: 8px; /* Sudut membulat */
-            opacity: 0; 
-            /* TRANSISI CEPAT DAN RESPONSIF */
-            transition: opacity 0.2s ease-out; 
-            pointer-events: none; 
+        .dual-page-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
         }
 
-        .content-frame.active {
-            display: block;
-            opacity: 1; 
-            z-index: 10;
-            pointer-events: auto; 
+        .iframe-kiri, .iframe-kanan {
+            flex: 1;
+            border: none;
+            width: 50%;
+            height: 100%;
+            /* Pastikan overflow diatur agar scrollbar muncul */
+            overflow: auto; 
+        }
+        
+        .iframe-kiri {
+            border-right: 2px solid #ccc; 
         }
     </style>
 </head>
 <body>
 
-    <div id="sidebar-left">
-        
-        <div 
-            class="nav-icon active" 
-            data-target="iframe-github"
-            title="Perpustakaan Github (Pengunjung)">
-            <i class="fas fa-user-friends"></i>
-        </div>
-
-        <div 
-            class="nav-icon" 
-            data-target="iframe-library"
-            title="Library Utama (Pencarian)">
-            <i class="fas fa-search"></i>
-        </div>
-        
-    </div>
-
-    <div id="main-content">
+    <div class="dual-page-container">
+        <iframe 
+            src="https://perpustakaanlubangsa.github.io/pengunjung" 
+            class="iframe-kiri"
+            title="Halaman Pengunjung"> 
+        </iframe>
         
         <iframe 
-            id="iframe-github"
-            class="content-frame active" 
-            src="https://perpustakaanlubangsa.github.io/pengunjung/"
-            title="Halaman Pengunjung Github">
+            src="https://perpustakaanlubangsa.github.io/pencarian" 
+            class="iframe-kanan"
+            title="Halaman Pencarian">
         </iframe>
-
-        <iframe 
-            id="iframe-library"
-            class="content-frame" 
-            src="https://perpustakaanlubangsa.github.io/pencarian/"
-            title="Halaman Pencarian Library">
-        </iframe>
-
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navIcons = document.querySelectorAll('.nav-icon');
-            const contentFrames = document.querySelectorAll('.content-frame');
-
-            navIcons.forEach(icon => {
-                icon.addEventListener('click', function() {
-                    const targetId = this.getAttribute('data-target');
-
-                    // Kelola kelas 'active' pada ikon
-                    navIcons.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Kelola visibilitas iframe
-                    contentFrames.forEach(frame => {
-                        frame.classList.remove('active');
-                    });
-
-                    // Tampilkan iframe target
-                    document.getElementById(targetId).classList.add('active');
-                });
-            });
-        });
-    </script>
 
 </body>
 </html>
