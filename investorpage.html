@@ -1,85 +1,179 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual Page Perpustakaan Lubangsa - Scrollbar Kustom</title>
-    <style>
-        /* =======================================
-           CSS untuk Kustomisasi Scrollbar (Hanya Bekerja di WebKit: Chrome, Safari, Edge)
-           ======================================= */
-        
-        /* 1. Mengatur lebar scrollbar */
-        .iframe-kiri::-webkit-scrollbar,
-        .iframe-kanan::-webkit-scrollbar {
-            width: 8px; /* Mengatur lebar scrollbar vertikal menjadi 8 piksel (lebih kecil) */
-            height: 8px; /* Mengatur tinggi scrollbar horizontal (jika ada) */
-        }
-        
-        /* 2. Mengatur Latar Belakang Track (jalur) scrollbar */
-        .iframe-kiri::-webkit-scrollbar-track,
-        .iframe-kanan::-webkit-scrollbar-track {
-            background: #f1f1f1; /* Latar belakang abu-abu sangat muda */
-            border-radius: 10px;
-        }
-        
-        /* 3. Mengatur Thumb (batang penggulir) scrollbar */
-        .iframe-kiri::-webkit-scrollbar-thumb,
-        .iframe-kanan::-webkit-scrollbar-thumb {
-            background: #aaa; /* Warna abu-abu yang lebih gelap */
-            border-radius: 10px; /* Membuat sudut membulat */
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dual Page Perpustakaan Lubangsa - Jam Selaras dan Seragam</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-        /* 4. Mengatur warna Thumb saat dihover */
-        .iframe-kiri::-webkit-scrollbar-thumb:hover,
-        .iframe-kanan::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Warna menjadi lebih gelap saat kursor diarahkan */
-        }
+  <style>
+    /* Reset dasar */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* =======================================
-           CSS Utama Dual-Page
-           ======================================= */
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
+    /* Pengaturan Body dan Container */
+    html, body {
+      height: 100%;
+      overflow: hidden; 
+      /* Warna latar belakang sangat lembut */
+      background-color: #f7f9fc; 
+      font-family: 'Poppins', sans-serif; /* Menggunakan Poppins */
+    }
 
-        .dual-page-container {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-        }
+    .dual-page-container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      /* Sedikit padding untuk tampilan 'mengambang' */
+      padding: 10px; 
+      gap: 10px; /* Jarak antara dua area */
+    }
 
-        .iframe-kiri, .iframe-kanan {
-            flex: 1;
-            border: none;
-            width: 50%;
-            height: 100%;
-            /* Pastikan overflow diatur agar scrollbar muncul */
-            overflow: auto; 
-        }
-        
-        .iframe-kiri {
-            border-right: 2px solid #ccc; 
-        }
-    </style>
+    /* Gaya dasar untuk area konten (seperti card) */
+    .iframe-kiri,
+    .kanan-area {
+      border-radius: 15px; /* Sudut membulat untuk tampilan lembut */
+      background-color: #ffffff; /* Latar putih bersih */
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); /* Bayangan lembut dan menyebar */
+      overflow: hidden; /* Konten di dalamnya tidak melebihi sudut membulat */
+      transition: all 0.3s ease; /* Transisi untuk interaksi yang lebih halus (jika ditambahkan hover dll) */
+    }
+
+    /* Sembunyikan scrollbar (Chrome, Safari, Edge) */
+    .iframe-kiri::-webkit-scrollbar,
+    .iframe-kanan::-webkit-scrollbar,
+    .kanan-area::-webkit-scrollbar,
+    .dual-page-container::-webkit-scrollbar {
+      display: none; 
+    }
+    .iframe-kiri,
+    .iframe-kanan,
+    .kanan-area,
+    .dual-page-container {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE 10+ */
+    }
+
+
+    /* Iframe kiri (pengunjung) */
+    .iframe-kiri {
+      flex: 1;
+      border: none;
+      width: 50%;
+      height: 100%;
+      overflow: auto;
+      /* Menghilangkan garis pembatas keras, diganti oleh gap dan shadow */
+      /* border-right: none; */ 
+    }
+
+    /* Area kanan terdiri dari jam + iframe */
+    .kanan-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      padding: 0; /* Pastikan tidak ada padding di sini agar jam dan iframe menempel di sudut area */
+    }
+
+    /* Jam digital */
+    #live-clock {
+      padding: 30px 20px;
+      /* Warna yang lebih hangat dan lembut */
+      background: black; 
+      color: #DCEEFF;
+      text-align: center;
+      font-family: 'Poppins', sans-serif; /* Font seragam */
+      /* Menghilangkan shadow pada jam agar terlihat menyatu */
+      box-shadow: none; 
+      border-radius: 15px 15px 0 0; /* Sudut membulat hanya di atas */
+    }
+
+    #live-clock .time-uniform {
+      display: block;
+      font-size: 4em; /* Lebih besar */
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 8px;
+      /* Memberikan sedikit efek 'neon' lembut pada teks */
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); 
+    }
+
+    #live-clock .date-small {
+      display: block;
+      font-size: 1.1em;
+      font-weight: 300;
+      opacity: 0.9;
+      letter-spacing: 1px;
+    }
+
+    /* Iframe kanan (pencarian) */
+    .iframe-kanan {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      /* Tidak ada border atau garis yang keras */
+    }
+  </style>
 </head>
 <body>
 
-    <div class="dual-page-container">
-        <iframe 
-            src="https://perpustakaanlubangsa.github.io/pengunjung" 
-            class="iframe-kiri"
-            title="Halaman Pengunjung"> 
-        </iframe>
-        
-        <iframe 
-            src="https://perpustakaanlubangsa.github.io/pencarian" 
-            class="iframe-kanan"
-            title="Halaman Pencarian">
-        </iframe>
+  <div class="dual-page-container">
+    <iframe 
+      src="https://perpustakaanlubangsa.github.io/pengunjung" 
+      class="iframe-kiri"
+      title="Halaman Pengunjung">
+    </iframe>
+
+    <div class="kanan-area">
+      <div id="live-clock">
+        <span class="time-uniform">--:--:--</span>
+        <span class="date-small">Memuat Tanggal...</span>
+      </div>
+
+      <iframe 
+        src="https://perpustakaanlubangsa.github.io/pencarian" 
+        class="iframe-kanan"
+        title="Halaman Pencarian">
+      </iframe>
     </div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+
+      const timeOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+
+      const dateOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+
+      const timeFull = now.toLocaleTimeString('id-ID', timeOptions);
+      const datePart = now.toLocaleDateString('id-ID', dateOptions);
+
+      document.querySelector('#live-clock .time-uniform').textContent = timeFull;
+      document.querySelector('#live-clock .date-small').textContent = datePart;
+    }
+
+    // Panggil sekali segera, lalu set interval
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
 
 </body>
 </html>
