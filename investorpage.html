@@ -1,179 +1,283 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dual Page Perpustakaan Lubangsa - Jam Selaras dan Seragam</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Perpustakaan Lubangsa - Vertical Contrast Layout with Soft Search Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
-  <style>
-    /* Reset dasar */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <style>
+        /* ================================================= */
+        /* 1. Variabel CSS & Reset Dasar */
+        /* ================================================= */
 
-    /* Pengaturan Body dan Container */
-    html, body {
-      height: 100%;
-      overflow: hidden; 
-      /* Warna latar belakang sangat lembut */
-      background-color: #f7f9fc; 
-      font-family: 'Poppins', sans-serif; /* Menggunakan Poppins */
-    }
+        :root {
+            --color-background-soft: #eef2f5; 
+            --color-card-background: #ffffff;
+            --color-text-dark: #2c3e50;
+            --color-sidebar-bg: #2a3442; 
+            --color-sidebar-text: #e2e8f0; 
+            --color-neon-glow: rgba(79, 209, 197, 0.7); 
+            --color-border-subtle: #f0f0f0; 
 
-    .dual-page-container {
-      display: flex;
-      width: 100vw;
-      height: 100vh;
-      /* Sedikit padding untuk tampilan 'mengambang' */
-      padding: 10px; 
-      gap: 10px; /* Jarak antara dua area */
-    }
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.08); 
+            --radius-card: 16px; 
+            --content-padding: 30px; 
+            
+            /* Variabel Khusus untuk Pencarian di Sidebar */
+            --search-card-bg: #ffffff;
+            --search-card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
 
-    /* Gaya dasar untuk area konten (seperti card) */
-    .iframe-kiri,
-    .kanan-area {
-      border-radius: 15px; /* Sudut membulat untuk tampilan lembut */
-      background-color: #ffffff; /* Latar putih bersih */
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); /* Bayangan lembut dan menyebar */
-      overflow: hidden; /* Konten di dalamnya tidak melebihi sudut membulat */
-      transition: all 0.3s ease; /* Transisi untuk interaksi yang lebih halus (jika ditambahkan hover dll) */
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Sembunyikan scrollbar (Chrome, Safari, Edge) */
-    .iframe-kiri::-webkit-scrollbar,
-    .iframe-kanan::-webkit-scrollbar,
-    .kanan-area::-webkit-scrollbar,
-    .dual-page-container::-webkit-scrollbar {
-      display: none; 
-    }
-    .iframe-kiri,
-    .iframe-kanan,
-    .kanan-area,
-    .dual-page-container {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE 10+ */
-    }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--color-background-soft);
+            font-family: 'Poppins', sans-serif;
+            color: var(--color-text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
+        /* ================================================= */
+        /* 2. Tata Letak Utama (Grid Vertikal) */
+        /* ================================================= */
 
-    /* Iframe kiri (pengunjung) */
-    .iframe-kiri {
-      flex: 1;
-      border: none;
-      width: 50%;
-      height: 100%;
-      overflow: auto;
-      /* Menghilangkan garis pembatas keras, diganti oleh gap dan shadow */
-      /* border-right: none; */ 
-    }
+        .master-card-container {
+            width: 95vw;
+            max-width: 1400px;
+            height: 90vh;
+            display: grid;
+            grid-template-columns: 1fr 2fr; 
+            
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+        
+        /* ================================================= */
+        /* 3. Zona Kiri (Sidebar Gelap) - Jam & Pencarian */
+        /* ================================================= */
 
-    /* Area kanan terdiri dari jam + iframe */
-    .kanan-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      width: 50%;
-      height: 100%;
-      overflow: hidden;
-      padding: 0; /* Pastikan tidak ada padding di sini agar jam dan iframe menempel di sudut area */
-    }
+        .sidebar-left {
+            background-color: var(--color-sidebar-bg);
+            color: var(--color-sidebar-text);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+        
+        #live-clock {
+            padding: 40px var(--content-padding);
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    /* Jam digital */
-    #live-clock {
-      padding: 30px 20px;
-      /* Warna yang lebih hangat dan lembut */
-      background: black; 
-      color: #DCEEFF;
-      text-align: center;
-      font-family: 'Poppins', sans-serif; /* Font seragam */
-      /* Menghilangkan shadow pada jam agar terlihat menyatu */
-      box-shadow: none; 
-      border-radius: 15px 15px 0 0; /* Sudut membulat hanya di atas */
-    }
+        #live-clock .time-uniform {
+            display: block;
+            font-family: 'Space Mono', monospace; 
+            font-size: 3.5em; 
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 5px; 
+            text-shadow: 0 0 10px var(--color-neon-glow); 
+        }
 
-    #live-clock .time-uniform {
-      display: block;
-      font-size: 4em; /* Lebih besar */
-      font-weight: 700;
-      line-height: 1;
-      margin-bottom: 8px;
-      /* Memberikan sedikit efek 'neon' lembut pada teks */
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); 
-    }
+        #live-clock .date-small {
+            display: block;
+            font-size: 1em;
+            font-weight: 300;
+            opacity: 0.85;
+            letter-spacing: 1px;
+        }
+        
+        /* Container Iframe Pencarian di Sidebar */
+        .iframe-area.pencarian {
+            flex-grow: 1;
+            /* Padding dihilangkan dari sini agar iframe bisa diatur margin-nya */
+            padding: 0; 
+            background-color: transparent; 
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    #live-clock .date-small {
-      display: block;
-      font-size: 1.1em;
-      font-weight: 300;
-      opacity: 0.9;
-      letter-spacing: 1px;
-    }
+        /* ************************************************* */
+        /* PERUBAHAN UTAMA UNTUK IFRAME PENCARIAN BER-RADIUS */
+        /* ************************************************* */
+        .iframe-area.pencarian .content-iframe {
+            /* Margin agar terlihat mengambang di dalam sidebar */
+            margin: var(--content-padding); 
+            /* Lebar/Tinggi Disesuaikan dengan Margin */
+            width: calc(100% - (2 * var(--content-padding))); 
+            height: calc(100% - (2 * var(--content-padding)));
+            
+            /* Tampilan Pojok Lembut (Radius) */
+            border-radius: var(--radius-card); 
+            
+            /* Latar Belakang Putih agar kontras dengan sidebar gelap */
+            background-color: var(--search-card-bg); 
+            
+            /* Bayangan Halus untuk efek mengambang */
+            box-shadow: var(--search-card-shadow);
+            
+            /* Agar Iframe berada di posisi yang benar */
+            position: relative; 
+            top: 0;
+            left: 0;
+            
+            /* Pastikan scrollbar tidak terpotong */
+            overflow: auto;
+        }
+        /* ************************************************* */
+        /* AKHIR PERUBAHAN UTAMA */
+        /* ************************************************* */
+        
+        /* Iframe Kunjungan Normal (Tanpa margin, mengisi penuh) */
+        .iframe-area.kunjungan {
+            flex-grow: 1;
+            padding: var(--content-padding);
+        }
+        .iframe-area.kunjungan .content-iframe {
+            width: 100%;
+            height: 100%;
+            padding: 0; /* Asumsi konten iframe memiliki padding sendiri */
+            margin: 0;
+            position: static;
+        }
 
-    /* Iframe kanan (pencarian) */
-    .iframe-kanan {
-      flex: 1;
-      border: none;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      /* Tidak ada border atau garis yang keras */
-    }
-  </style>
+        /* ================================================= */
+        /* 4. Zona Kanan (Area Kerja Terang) - Form Kunjungan */
+        /* ================================================= */
+
+        .main-content-right {
+            background-color: var(--color-card-background);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Gaya Iframe Umum (hanya untuk Kunjungan/Kanan) */
+        .content-iframe {
+            border: none;
+            overflow-y: auto;
+        }
+        
+        /* ================================================= */
+        /* 5. Responsif untuk Layar Kecil */
+        /* ================================================= */
+        
+        @media (max-width: 1000px) {
+            html, body { height: auto; overflow-y: auto; }
+            .master-card-container {
+                width: 100vw; height: auto; min-height: 100vh;
+                border-radius: 0; box-shadow: none;
+                grid-template-columns: 1fr; 
+            }
+            
+            .sidebar-left {
+                min-height: 350px; 
+                border-bottom: 8px solid var(--color-background-soft);
+                align-items: center; /* Pusatkan Jam di mode mobile */
+            }
+            
+            .main-content-right { min-height: 500px; }
+            
+            #live-clock { text-align: center; border-bottom: none; }
+            
+            .iframe-area.pencarian {
+                 border-top: none;
+            }
+            
+            /* Atur ulang Iframe Pencarian untuk mode mobile */
+            .iframe-area.pencarian .content-iframe {
+                margin: 20px; /* Margin lebih kecil */
+                width: calc(100% - 40px);
+                height: calc(100% - 40px);
+            }
+        }
+        
+    </style>
 </head>
 <body>
 
-  <div class="dual-page-container">
-    <iframe 
-      src="https://perpustakaanlubangsa.github.io/pengunjung" 
-      class="iframe-kiri"
-      title="Halaman Pengunjung">
-    </iframe>
+    <main class="master-card-container" role="main">
+        
+        <div class="sidebar-left">
+            
+            <header id="live-clock" role="timer">
+                <span class="time-uniform">--:--:--</span>
+                <span class="date-small">Memuat Tanggal...</span>
+            </header>
+            
+            <div class="iframe-area pencarian">
+                 <iframe 
+                    src="https://perpustakaanlubangsa.github.io/pencarian" 
+                    class="content-iframe"
+                    title="Halaman Pencarian Katalog Buku"
+                    loading="lazy">
+                </iframe>
+            </div>
+            
+        </div>
 
-    <div class="kanan-area">
-      <div id="live-clock">
-        <span class="time-uniform">--:--:--</span>
-        <span class="date-small">Memuat Tanggal...</span>
-      </div>
+        <section class="main-content-right" aria-label="Area Form Kunjungan Utama">
+            
+            <div class="iframe-area kunjungan">
+                <iframe 
+                    src="https://perpustakaanlubangsa.github.io/pengunjung" 
+                    class="content-iframe"
+                    title="Halaman Pengunjung Perpustakaan"
+                    loading="lazy">
+                </iframe>
+            </div>
 
-      <iframe 
-        src="https://perpustakaanlubangsa.github.io/pencarian" 
-        class="iframe-kanan"
-        title="Halaman Pencarian">
-      </iframe>
-    </div>
-  </div>
+        </section>
 
-  <script>
-    function updateClock() {
-      const now = new Date();
+    </main>
 
-      const timeOptions = {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      };
+    <script>
+        function updateClock() {
+            const now = new Date();
 
-      const dateOptions = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta' 
+            };
 
-      const timeFull = now.toLocaleTimeString('id-ID', timeOptions);
-      const datePart = now.toLocaleDateString('id-ID', dateOptions);
+            const dateOptions = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
 
-      document.querySelector('#live-clock .time-uniform').textContent = timeFull;
-      document.querySelector('#live-clock .date-small').textContent = datePart;
-    }
+            const locale = 'id-ID'; 
+            
+            const timeFull = now.toLocaleTimeString(locale, timeOptions);
+            const datePart = now.toLocaleDateString(locale, dateOptions);
+            
+            const timeEl = document.querySelector('#live-clock .time-uniform');
+            const dateEl = document.querySelector('#live-clock .date-small');
 
-    // Panggil sekali segera, lalu set interval
-    updateClock();
-    setInterval(updateClock, 1000);
-  </script>
+            if (timeEl && dateEl) {
+                timeEl.textContent = timeFull;
+                dateEl.textContent = datePart;
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
 
 </body>
 </html>
