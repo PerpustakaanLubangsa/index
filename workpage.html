@@ -3,53 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Page - Animated Sidebar</title>
+    <title>Work Page - Auto-Close Sidebar</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* Elegan Dark Sidebar dengan Ikon Murni */
+        /* Elegan Dark Sidebar Murni (Dengan Hover/Sentuh Bouncy/Kenyal) */
         :root {
             --color-bg-light: #f4f6f8; 
             --color-card-bg: #ffffff; 
-
             --color-sidebar-bg: #1c2635; 
             --color-accent-cyan: #00bcd4; 
-            
             --color-icon-default: #95a3b7; 
-            
-            --tooltip-bg: #333333; 
-            --tooltip-text: #ffffff; 
-            
-            --color-hover-bg: transparent; 
-            --color-active-bg: transparent; 
-
             --sidebar-width: 70px; 
-            --transition-speed: 0.3s;
-        }
-
-        /* Definisi Keyframe Animasi Masuk Sidebar */
-        @keyframes sidebarSlideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-100%); 
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0); 
-            }
-        }
-
-        /* Definisi Keyframe Animasi Masuk Ikon (Staggered) */
-        @keyframes iconFadeIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px); 
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            --sidebar-width-expanded: 300px; 
+            --transition-duration: 0.4s; 
+            --bouncy-ease: cubic-bezier(0.25, 0.8, 0.5, 1.2); 
+            --snappy-ease: cubic-bezier(0.17, 0.82, 0.44, 0.98); 
         }
 
         body {
@@ -59,184 +29,131 @@
             height: 100vh; 
             overflow: hidden; 
             background-color: var(--color-bg-light); 
-            color: var(--color-text-dark); 
             font-size: 14px;
         }
         
+        /* ------------------------------------------------ */
+        /* SIDEBAR - Menggunakan Class 'expanded' yang dikontrol JS */
+        /* ------------------------------------------------ */
         #sidebar-left {
             width: var(--sidebar-width); 
             min-width: var(--sidebar-width);
-            
             background-color: var(--color-sidebar-bg); 
-            padding: 10px 0;
+            padding: 0; 
             display: flex;
             flex-direction: column; 
-            align-items: center;
+            justify-content: flex-start; 
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4); 
-            border-right: 1px solid var(--color-hover-bg); 
             z-index: 100; 
-            
-            opacity: 0; 
-            transform: translateX(-100%);
-            animation: sidebarSlideIn 0.5s ease-out forwards; 
+            transition: width var(--transition-duration) var(--bouncy-ease), min-width var(--transition-duration) var(--bouncy-ease);
         }
 
-        .nav-icon {
-            position: relative; 
-            padding: 15px 0; 
-            cursor: pointer;
-            font-size: 20px; 
-            margin: 4px 0; 
-            transition: all 0.3s ease-out; 
-            text-align: center;
-            width: 100%; 
-            color: var(--color-icon-default); 
-            box-sizing: border-box;
-            border-left: 4px solid transparent; 
-            border-radius: 4px; 
-            
-            opacity: 0; 
-            transform: translateX(-20px); 
+        /* 💡 Melebarkan Sidebar hanya saat memiliki class 'expanded' */
+        #sidebar-left.expanded {
+            width: var(--sidebar-width-expanded);
+            min-width: var(--sidebar-width-expanded);
         }
         
-        .nav-icon.animated {
-            animation: iconFadeIn 0.3s cubic-bezier(0.2, 0.7, 0.5, 1) forwards;
+        /* 💡 Tampilkan Teks saat Sidebar Melebar */
+        #sidebar-left.expanded #profile-header img { margin-right: 15px; }
+        #sidebar-left.expanded #profile-header span { opacity: 1; max-width: 200px; }
+        #sidebar-left.expanded .nav-label {
+            max-width: calc(var(--sidebar-width-expanded) - 80px); opacity: 1; 
+            transition: max-width 0.3s ease-out, opacity 0.2s ease-out 0.1s;
         }
 
-        /* Efek Cyan Pulse Awal */
-        .nav-icon.initial-pulse {
-            color: var(--color-accent-cyan);
-            transition: all 0.15s ease-in-out; 
-            transform: scale(1.15); 
-        }
+        /* ------------------------------------------------ */
+        /* KONTEN UTAMA (IFRAME TIDAK MENCIUT) */
+        /* ------------------------------------------------ */
 
-        /* Efek Hover Ikon */
-        .nav-icon:hover {
-            background-color: transparent; 
-            color: var(--color-accent-cyan); 
-            transform: translateY(-3px) scale(1.05); 
-            box-shadow: none; 
-        }
-
-        /* Navigasi Aktif */
-        .nav-icon.active {
-            background-color: transparent; 
-            color: var(--color-accent-cyan); 
-            font-weight: bold;
-            transform: none;
-            border-left: 2px solid var(--color-accent-cyan); 
-            box-shadow: none; 
-        }
-
-        /* CSS untuk Tooltip (Keterangan) dengan Animasi Ringan */
-        .nav-icon::before {
-            content: attr(title); 
-            visibility: hidden;
-            opacity: 0;
-            background-color: var(--tooltip-bg); 
-            color: var(--tooltip-text); 
-            text-align: center;
-            border-radius: 4px;
-            padding: 5px 10px;
-            position: absolute;
-            z-index: 101; 
-            left: calc(var(--sidebar-width) + 1px); 
-            top: 50%;
-            white-space: nowrap; 
-            pointer-events: none; 
-            
-            /* Animasi Tooltip: Mulai dari kiri (-10px) dan fade-in */
-            transform: translateY(-50%) translateX(-10px); 
-            transition: 
-                opacity 0.2s ease-out, 
-                transform 0.2s ease-out, 
-                visibility 0.2s linear;
-        }
-
-        /* Tampilkan Tooltip dengan animasi geser ke kanan (+5px) */
-        #sidebar-left:hover .nav-icon::before {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(-50%) translateX(5px); 
-        }
-
-        /* EFEK DIMMING KONTEN & ANIMASI MASUK KONTEN*/
-        #main-container {
+        #main-container { 
             flex-grow: 1; 
-            height: 100%;
+            height: 100%; 
+            overflow: hidden; 
             position: relative; 
         }
-        
-        #main-content {
-            height: 100%;
+
+        #main-content { 
+            height: 100%; 
             padding: 20px; 
             position: relative; 
             background-color: var(--color-bg-light); 
-            box-sizing: border-box;
-            transition: filter var(--transition-speed) ease-in-out; 
-        }
-
-        #sidebar-left:hover ~ #main-container #main-content {
-            filter: brightness(0.7) blur(1px); 
-            pointer-events: none; 
+            box-sizing: border-box; 
+            width: calc(100vw - var(--sidebar-width)); 
+            transform: translateX(0); 
+            transition: transform var(--transition-duration) var(--bouncy-ease); 
         }
         
-        .content-frame {
-            position: absolute; 
-            top: 20px; 
-            left: 20px;
-            width: calc(100% - 40px); 
-            height: calc(100% - 40px); 
-            border: none; 
-            background-color: var(--color-card-bg); 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
-            border-radius: 8px; 
-            opacity: 0; 
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out; 
-            z-index: 10; 
-            pointer-events: none; 
-            transform: translateY(20px); 
+        /* 💡 Geser Konten Utama saat Sidebar memiliki class 'expanded' */
+        #sidebar-left.expanded ~ #main-container #main-content {
+             transform: translateX(calc(var(--sidebar-width) - var(--sidebar-width-expanded))); 
         }
 
-        .content-frame.active {
-            display: block;
-            opacity: 1; 
-            z-index: 10; 
-            pointer-events: auto; 
-            transform: translateY(0); 
+        /* ------------------------------------------------ */
+        /* IFRAME ANIMASI KENYAL */
+        /* ------------------------------------------------ */
+        .content-frame { 
+            position: absolute; top: 20px; left: 20px; 
+            width: calc(100% - 40px); height: calc(100% - 40px); 
+            border: none; background-color: var(--color-card-bg); 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); border-radius: 8px; z-index: 10; pointer-events: none; 
+            opacity: 0; transform: scale(0.95); 
+            transition: opacity 0.2s ease-out, transform 0.4s var(--bouncy-ease); 
         }
+        
+        .content-frame.active { 
+            display: block; pointer-events: auto; 
+            opacity: 1; transform: scale(1); 
+            transition: opacity 0.2s 0.2s ease-in, transform 0.4s var(--bouncy-ease); 
+        }
+        
+        /* ------------------------------------------------ */
+        /* HEADER & NAVIGASI (Hanya sedikit penyesuaian) */
+        /* ------------------------------------------------ */
+        #profile-header {
+            display: flex; align-items: center; padding: 15px 20px; margin-bottom: 20px; 
+            color: white; white-space: nowrap; overflow: hidden; box-sizing: border-box; background-color: #2a384b; 
+        }
+        #profile-header img {
+            width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 0; 
+            transition: margin-right 0.2s cubic-bezier(0.17, 0.82, 0.44, 0.98); 
+        }
+        #profile-header span {
+            font-weight: 600; font-size: 16px; opacity: 0; max-width: 0; overflow: hidden; margin-left: 10px;
+            transition: opacity 0.2s ease-out 0.1s; 
+        }
+        .nav-list-wrapper { display: flex; flex-direction: column; justify-content: space-around; flex-grow: 1; }
+        .nav-icon {
+            position: relative; padding: 15px 20px; cursor: pointer; font-size: 20px; margin: 0; text-align: left; width: 100%; 
+            color: var(--color-icon-default); box-sizing: border-box; display: flex; align-items: center; border-radius: 4px; 
+            transition: color 0.2s ease-out, border-right 0.2s ease-out, background-color 0.2s ease-out;
+        }
+        .nav-icon i { display: block; position: relative; z-index: 2; width: 30px; text-align: center; }
+        .nav-label {
+            white-space: nowrap; overflow: hidden; max-width: 0; margin-left: 10px; opacity: 0; 
+            transition: max-width 0.3s ease-out, opacity 0.1s ease-out 0.05s; font-size: 14px; font-weight: 500;
+        }
+        .nav-icon:hover { color: var(--color-accent-cyan); background-color: rgba(255, 255, 255, 0.08); }
+        .nav-icon.active { color: var(--color-accent-cyan); border-right: 4px solid var(--color-accent-cyan); background-color: rgba(0, 188, 212, 0.15); }
     </style>
 </head>
 <body>
 
     <div id="sidebar-left">
         
-        <div class="nav-icon active" data-target="iframe-absensi" title="Halaman Absensi">
-            <i class="fas fa-clipboard-check"></i>
+        <div id="profile-header">
+            <img src="logo.png" alt="Logo Pustakawan" /> 
+            <span>Dashboard<br>Pustakawan Lubangsa</span>
         </div>
         
-        <div class="nav-icon" data-target="iframe-pinjam" title="Sistem Peminjaman">
-            <i class="fas fa-book"></i>
-        </div>
-
-        <div class="nav-icon" data-target="iframe-library" title="Pencarian Library">
-            <i class="fas fa-search"></i>
-        </div>
-        
-        <div class="nav-icon" data-target="iframe-pengunjung" title="Halaman Pengunjung">
-            <i class="fas fa-users"></i>
-        </div>
-        
-        <div class="nav-icon" data-target="iframe-admin" title="Halaman Admin">
-            <i class="fas fa-user-shield"></i>
-        </div>
-        
-        <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan">
-            <i class="fas fa-atlas"></i> 
-        </div>
-
-        <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi">
-            <i class="fas fa-calendar-alt"></i>
+        <div class="nav-list-wrapper">
+            <div class="nav-icon active" data-target="iframe-absensi" title="Halaman Absensi"><i class="fas fa-clipboard-check"></i><span class="nav-label">Halaman Absensi</span></div>
+            <div class="nav-icon" data-target="iframe-pinjam" title="Sistem Peminjaman"><i class="fas fa-book"></i><span class="nav-label">Sistem Peminjaman</span></div>
+            <div class="nav-icon" data-target="iframe-library" title="Pencarian Library"><i class="fas fa-search"></i><span class="nav-label">Pencarian Library</span></div>
+            <div class="nav-icon" data-target="iframe-pengunjung" title="Halaman Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Halaman Pengunjung</span></div>
+            <div class="nav-icon" data-target="iframe-admin" title="Halaman Admin"><i class="fas fa-user-shield"></i><span class="nav-label">Halaman Admin</span></div>
+            <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan"><i class="fas fa-atlas"></i> <span class="nav-label">Pedoman Penggunaan</span></div>
+            <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi"><i class="fas fa-calendar-alt"></i><span class="nav-label">Jadwal Absensi</span></div>
         </div>
         
     </div>
@@ -244,53 +161,13 @@
     <div id="main-container">
         <div id="main-content">
             
-            <iframe 
-                id="iframe-absensi"
-                class="content-frame active" 
-                src="https://perpustakaanlubangsa.github.io/absensi/"
-                title="Halaman Absensi">
-            </iframe>
-            
-            <iframe 
-                id="iframe-jadwal"
-                class="content-frame" 
-                src="https://perpustakaanlubangsa.github.io/absensi/jadwal"
-                title="Jadwal Absensi">
-            </iframe>
-
-            <iframe 
-                id="iframe-library"
-                class="content-frame" 
-                src="https://perpustakaanlubangsa.github.io/pencarian/dual"
-                title="Pencarian Library">
-            </iframe>
-
-            <iframe 
-                id="iframe-pinjam"
-                class="content-frame" 
-                src="https://perpustakaanlubangsa.github.io/sistempinjam/"
-                title="Sistem Peminjaman">
-            </iframe>
-
-            <iframe 
-                id="iframe-pengunjung"
-                class="content-frame" 
-                src="https://perpustakaanlubangsa.github.io/pengunjung/"
-                title="Halaman Pengunjung">
-            </iframe>
-            
-            <iframe 
-                id="iframe-pedoman"
-                class="content-frame" 
-                src="https://perpustakaanlubangsa.github.io/pedoman/"
-                title="Pedoman Penggunaan">
-            </iframe>
-            <iframe 
-                id="iframe-admin"
-                class="content-frame" 
-                src="https://perpustakaanlubangsa.github.io/pengunjung/admin"
-                title="Halaman Admin">
-            </iframe>
+            <iframe id="iframe-absensi" class="content-frame active" data-src="https://perpustakaanlubangsa.github.io/absensi/" src="https://perpustakaanlubangsa.github.io/absensi/" title="Halaman Absensi"></iframe>
+            <iframe id="iframe-jadwal" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/absensi/jadwal" src="" title="Jadwal Absensi"></iframe>
+            <iframe id="iframe-library" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pencarian/dual" src="" title="Pencarian Library"></iframe>
+            <iframe id="iframe-pinjam" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/sistempinjam/" src="" title="Sistem Peminjaman"></iframe>
+            <iframe id="iframe-pengunjung" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/" src="" title="Halaman Pengunjung"></iframe>
+            <iframe id="iframe-pedoman" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pedoman/" src="" title="Pedoman Penggunaan"></iframe>
+            <iframe id="iframe-admin" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/admin" src="" title="Halaman Admin"></iframe>
 
         </div>
     </div>
@@ -298,51 +175,67 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar-left');
             const navIcons = document.querySelectorAll('.nav-icon');
             const contentFrames = document.querySelectorAll('.content-frame');
-            const totalEntryTime = 1100;
 
-            // Animasi Staggered Entry untuk Ikon
-            setTimeout(() => {
-                navIcons.forEach((icon, index) => {
-                    // Delay berdasarkan urutan ikon
-                    icon.style.animationDelay = `${index * 50}ms`;
-                    icon.classList.add('animated');
-                });
-            }, 500); 
+            // 1. LOGIKA UNTUK MEMBUKA DAN MENUTUP SIDEBAR
+            
+            // Buka Sidebar (saat sentuh/klik atau mouseenter)
+            sidebar.addEventListener('mouseenter', function() {
+                sidebar.classList.add('expanded');
+            });
+            
+            // Tutup Sidebar (saat mouse keluar)
+            sidebar.addEventListener('mouseleave', function() {
+                sidebar.classList.remove('expanded');
+            });
 
-            // Animasi Cyan Pulse Awal
-            function startInitialPulse() {
-                navIcons.forEach((icon, index) => {
-                    setTimeout(() => {
-                        icon.classList.add('initial-pulse');
-                        setTimeout(() => {
-                            icon.classList.remove('initial-pulse');
-                        }, 300); // Durasi pulse (0.3s)
-                    }, totalEntryTime + (index * 150)); // Delay agar Pulse terjadi setelah semua ikon masuk
-                });
-            }
-            window.addEventListener('load', startInitialPulse);
 
-            // Logika Navigasi (Mengganti Iframe/Konten)
+            // 2. LOGIKA KLIK NAVIGASI (Auto-Close)
             navIcons.forEach(icon => {
                 icon.addEventListener('click', function() {
                     const targetId = this.getAttribute('data-target');
-
-                    // Hapus status aktif dari semua ikon
-                    navIcons.forEach(i => i.classList.remove('active'));
-                    // Tambahkan status aktif pada ikon yang diklik
-                    this.classList.add('active');
                     
-                    // Hilangkan semua frame konten
+                    // A. Kelola Kelas Aktif Navigasi
+                    navIcons.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // B. Kelola Transisi Iframe (Menghilang)
                     contentFrames.forEach(frame => {
                         frame.classList.remove('active');
                     });
 
-                    // Tampilkan frame konten target
-                    document.getElementById(targetId).classList.add('active');
+                    const targetFrame = document.getElementById(targetId);
+                    if (targetFrame) {
+                        const dataSrc = targetFrame.getAttribute('data-src');
+                        
+                        // Lazy Load
+                        if (dataSrc && targetFrame.getAttribute('src') === '') {
+                            targetFrame.setAttribute('src', dataSrc);
+                        }
+                        
+                        // C. Memicu Transisi Muncul Iframe
+                        // Delay 50ms untuk memastikan transisi 'menghilang' berjalan
+                        setTimeout(() => {
+                           targetFrame.classList.add('active');
+                        }, 50); 
+                    }
+                    
+                    // D. 💡 FITUR BARU: LANGSUNG TUTUP SIDEBAR SETELAH KLIK
+                    // Tambahkan sedikit delay agar pengguna sempat melihat teks ikon yang diklik sebelum sidebar menutup
+                    setTimeout(() => {
+                        sidebar.classList.remove('expanded');
+                    }, 100); 
+
                 });
             });
+            
+            // Atur ikon pertama aktif saat load awal
+            const defaultActiveIcon = document.querySelector('.nav-icon.active');
+            if (!defaultActiveIcon) {
+                navIcons[0]?.classList.add('active');
+            }
         });
     </script>
 
