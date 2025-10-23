@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Perpustakaan Lubangsa - Vertical Contrast Layout with Soft Search Card</title>
+    <title>Dashboard Perpustakaan Lubangsa - Dynamic Layout V2</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
@@ -13,27 +13,29 @@
         /* ================================================= */
 
         :root {
-            --color-background-soft: #eef2f5; 
+            --color-background-soft: #f4f7fa; 
             --color-card-background: #ffffff;
             --color-text-dark: #2c3e50;
-            --color-sidebar-bg: #2a3442; 
-            --color-sidebar-text: #e2e8f0; 
-            --color-neon-glow: rgba(79, 209, 197, 0.7); 
-            --color-border-subtle: #f0f0f0; 
+            --color-sidebar-bg: #212529; /* Lebih gelap, hampir hitam */
+            --color-sidebar-text: #e9ecef; 
+            --color-primary-green: #28a745; /* Hijau yang lebih kuat */
+            --color-neon-glow: rgba(40, 167, 69, 0.7); /* Glow hijau */
+            --color-border-subtle: #dee2e6; 
 
-            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.08); 
+            --shadow-card: 0 15px 45px rgba(0, 0, 0, 0.1); /* Bayangan lebih dramatis */
             --radius-card: 16px; 
             --content-padding: 30px; 
             
             /* Variabel Khusus untuk Pencarian di Sidebar */
-            --search-card-bg: #ffffff;
-            --search-card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --search-card-bg: rgba(255, 255, 255, 0.1); /* Untuk efek glassmorphism */
+            --search-card-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         html, body {
@@ -48,23 +50,21 @@
         }
 
         /* ================================================= */
-        /* 2. Tata Letak Utama (Grid Vertikal) */
+        /* 2. Tata Letak Utama (Full Screen Grid) */
         /* ================================================= */
 
         .master-card-container {
-            width: 95vw;
-            max-width: 1400px;
-            height: 90vh;
+            width: 100vw; 
+            height: 100vh;
             display: grid;
-            grid-template-columns: 1fr 2fr; 
-            
-            border-radius: var(--radius-card);
-            box-shadow: var(--shadow-card);
+            /* Lebar sidebar diperlebar dari 350px menjadi 400px */
+            grid-template-columns: 400px 1fr; 
+            box-shadow: none; 
             overflow: hidden;
         }
         
         /* ================================================= */
-        /* 3. Zona Kiri (Sidebar Gelap) - Jam & Pencarian */
+        /* 3. Zona Kiri (Sidebar Gelap & Animasi) */
         /* ================================================= */
 
         .sidebar-left {
@@ -73,85 +73,76 @@
             display: flex;
             flex-direction: column;
             padding: 0;
+            border-right: 2px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- Animasi Pulse untuk Jam Neon --- */
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 10px var(--color-neon-glow), 0 0 20px var(--color-neon-glow), 0 0 30px var(--color-neon-glow); }
+            50% { text-shadow: 0 0 5px var(--color-neon-glow), 0 0 15px rgba(40, 167, 69, 0.5), 0 0 25px rgba(40, 167, 69, 0.3); }
         }
         
         #live-clock {
             padding: 40px var(--content-padding);
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            /* PENTING: Rata tengah teks jam */
+            text-align: center; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: default;
         }
 
         #live-clock .time-uniform {
             display: block;
             font-family: 'Space Mono', monospace; 
-            font-size: 3.5em; 
+            font-size: 3.5em; /* Ukuran font sedikit diperbesar */
             font-weight: 700;
             line-height: 1;
-            margin-bottom: 5px; 
-            text-shadow: 0 0 10px var(--color-neon-glow); 
+            margin-bottom: 8px; 
+            /* PENTING: Warna jam menjadi hijau */
+            color: var(--color-primary-green); 
+            animation: neonPulse 2s ease-in-out infinite alternate;
         }
 
         #live-clock .date-small {
             display: block;
-            font-size: 1em;
+            font-size: 1.1em; /* Ukuran font sedikit diperbesar */
             font-weight: 300;
-            opacity: 0.85;
-            letter-spacing: 1px;
+            opacity: 0.8; /* Sedikit lebih terang */
+            letter-spacing: 1.5px;
         }
         
-        /* Container Iframe Pencarian di Sidebar */
+        /* --- Card Pencarian dengan Efek Glassmorphism --- */
         .iframe-area.pencarian {
             flex-grow: 1;
-            /* Padding dihilangkan dari sini agar iframe bisa diatur margin-nya */
             padding: 0; 
+            display: flex; 
+            justify-content: center;
+            align-items: center;
             background-color: transparent; 
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* ************************************************* */
-        /* PERUBAHAN UTAMA UNTUK IFRAME PENCARIAN BER-RADIUS */
-        /* ************************************************* */
         .iframe-area.pencarian .content-iframe {
-            /* Margin agar terlihat mengambang di dalam sidebar */
             margin: var(--content-padding); 
-            /* Lebar/Tinggi Disesuaikan dengan Margin */
             width: calc(100% - (2 * var(--content-padding))); 
             height: calc(100% - (2 * var(--content-padding)));
             
-            /* Tampilan Pojok Lembut (Radius) */
             border-radius: var(--radius-card); 
             
-            /* Latar Belakang Putih agar kontras dengan sidebar gelap */
-            background-color: var(--search-card-bg); 
+            /* Glassmorphism Effect */
+            background: var(--search-card-bg); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             
-            /* Bayangan Halus untuk efek mengambang */
             box-shadow: var(--search-card-shadow);
-            
-            /* Agar Iframe berada di posisi yang benar */
             position: relative; 
-            top: 0;
-            left: 0;
-            
-            /* Pastikan scrollbar tidak terpotong */
-            overflow: auto;
-        }
-        /* ************************************************* */
-        /* AKHIR PERUBAHAN UTAMA */
-        /* ************************************************* */
-        
-        /* Iframe Kunjungan Normal (Tanpa margin, mengisi penuh) */
-        .iframe-area.kunjungan {
-            flex-grow: 1;
-            padding: var(--content-padding);
-        }
-        .iframe-area.kunjungan .content-iframe {
-            width: 100%;
-            height: 100%;
-            padding: 0; /* Asumsi konten iframe memiliki padding sendiri */
-            margin: 0;
-            position: static;
+            overflow: hidden; 
         }
 
+        .iframe-area.pencarian .content-iframe:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+        
         /* ================================================= */
         /* 4. Zona Kanan (Area Kerja Terang) - Form Kunjungan */
         /* ================================================= */
@@ -161,45 +152,75 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* Gaya Iframe Umum (hanya untuk Kunjungan/Kanan) */
-        .content-iframe {
+        .iframe-area.kunjungan {
+            flex-grow: 1;
+            padding: var(--content-padding);
+        }
+
+        .iframe-area.kunjungan .content-iframe {
+            width: 100%;
+            height: 100%;
             border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             overflow-y: auto;
+        }
+
+        /* ================================================= */
+        /* 5. Scrollbar Kustom untuk Iframe (Webkit) */
+        /* ================================================= */
+        
+        .iframe-area.kunjungan .content-iframe::-webkit-scrollbar,
+        .iframe-area.pencarian .content-iframe::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .iframe-area.kunjungan .content-iframe::-webkit-scrollbar-thumb,
+        .iframe-area.pencarian .content-iframe::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .iframe-area.kunjungan .content-iframe::-webkit-scrollbar-track,
+        .iframe-area.pencarian .content-iframe::-webkit-scrollbar-track {
+            background: transparent;
         }
         
         /* ================================================= */
-        /* 5. Responsif untuk Layar Kecil */
+        /* 6. Responsif untuk Layar Kecil */
         /* ================================================= */
         
         @media (max-width: 1000px) {
-            html, body { height: auto; overflow-y: auto; }
+            html, body { height: auto; overflow-y: auto; background-color: var(--color-background-soft); }
+            
             .master-card-container {
                 width: 100vw; height: auto; min-height: 100vh;
-                border-radius: 0; box-shadow: none;
                 grid-template-columns: 1fr; 
             }
             
             .sidebar-left {
-                min-height: 350px; 
+                min-height: 400px; 
+                border-right: none;
                 border-bottom: 8px solid var(--color-background-soft);
-                align-items: center; /* Pusatkan Jam di mode mobile */
+                align-items: center; 
+                justify-content: center;
             }
             
-            .main-content-right { min-height: 500px; }
+            #live-clock { text-align: center; border-bottom: none; padding: 20px; }
             
-            #live-clock { text-align: center; border-bottom: none; }
+            .main-content-right { min-height: 500px; box-shadow: none; }
             
-            .iframe-area.pencarian {
-                 border-top: none;
-            }
-            
-            /* Atur ulang Iframe Pencarian untuk mode mobile */
             .iframe-area.pencarian .content-iframe {
-                margin: 20px; /* Margin lebih kecil */
+                margin: 20px; 
                 width: calc(100% - 40px);
                 height: calc(100% - 40px);
+                backdrop-filter: none; 
+                background: var(--color-card-background); 
+                border: none;
             }
         }
         
