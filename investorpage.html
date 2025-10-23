@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Perpustakaan Lubangsa - Dynamic Layout V2</title>
+    <title>Dashboard Perpustakaan Lubangsa - Dynamic Layout V2 | Neon Light Cyan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
@@ -13,21 +13,24 @@
         /* ================================================= */
 
         :root {
+            /* --- SKEMA WARNA BARU: NEON LIGHT CYAN --- */
             --color-background-soft: #f4f7fa; 
             --color-card-background: #ffffff;
             --color-text-dark: #2c3e50;
-            --color-sidebar-bg: #212529; /* Lebih gelap, hampir hitam */
+            --color-sidebar-bg: #212529; /* Gelap */
             --color-sidebar-text: #e9ecef; 
-            --color-primary-green: #28a745; /* Hijau yang lebih kuat */
-            --color-neon-glow: rgba(40, 167, 69, 0.7); /* Glow hijau */
+            
+            --color-primary-cyan: #4DD0E1; /* Light Cyan 400 (Warna Utama untuk Jam) */
+            --color-neon-glow: rgba(128, 222, 234, 0.9); /* Cyan 300 (Warna Glow Sangat Terang) */
+            --color-dark-cyan: #00838F; /* Digunakan untuk aksen lain yang lebih gelap */
+            
             --color-border-subtle: #dee2e6; 
 
-            --shadow-card: 0 15px 45px rgba(0, 0, 0, 0.1); /* Bayangan lebih dramatis */
+            --shadow-card: 0 15px 45px rgba(0, 0, 0, 0.1); 
             --radius-card: 16px; 
             --content-padding: 30px; 
             
-            /* Variabel Khusus untuk Pencarian di Sidebar */
-            --search-card-bg: rgba(255, 255, 255, 0.1); /* Untuk efek glassmorphism */
+            --search-card-bg: rgba(255, 255, 255, 0.1); 
             --search-card-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
         }
 
@@ -57,7 +60,6 @@
             width: 100vw; 
             height: 100vh;
             display: grid;
-            /* Lebar sidebar diperlebar dari 350px menjadi 400px */
             grid-template-columns: 400px 1fr; 
             box-shadow: none; 
             overflow: hidden;
@@ -78,13 +80,18 @@
 
         /* --- Animasi Pulse untuk Jam Neon --- */
         @keyframes neonPulse {
+            /* Menggunakan warna Neon Light Cyan */
             0%, 100% { text-shadow: 0 0 10px var(--color-neon-glow), 0 0 20px var(--color-neon-glow), 0 0 30px var(--color-neon-glow); }
-            50% { text-shadow: 0 0 5px var(--color-neon-glow), 0 0 15px rgba(40, 167, 69, 0.5), 0 0 25px rgba(40, 167, 69, 0.3); }
+            50% { 
+                /* Efek glow meredup sedikit saat 50% */
+                text-shadow: 0 0 5px var(--color-neon-glow), 
+                             0 0 15px rgba(77, 208, 225, 0.7), 
+                             0 0 25px rgba(77, 208, 225, 0.5); 
+            }
         }
         
         #live-clock {
             padding: 40px var(--content-padding);
-            /* PENTING: Rata tengah teks jam */
             text-align: center; 
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             cursor: default;
@@ -93,20 +100,20 @@
         #live-clock .time-uniform {
             display: block;
             font-family: 'Space Mono', monospace; 
-            font-size: 3.5em; /* Ukuran font sedikit diperbesar */
+            font-size: 3.5em; 
             font-weight: 700;
             line-height: 1;
             margin-bottom: 8px; 
-            /* PENTING: Warna jam menjadi hijau */
-            color: var(--color-primary-green); 
+            /* Warna jam Light Cyan */
+            color: var(--color-primary-cyan); 
             animation: neonPulse 2s ease-in-out infinite alternate;
         }
 
         #live-clock .date-small {
             display: block;
-            font-size: 1.1em; /* Ukuran font sedikit diperbesar */
+            font-size: 1.1em; 
             font-weight: 300;
-            opacity: 0.8; /* Sedikit lebih terang */
+            opacity: 0.8; 
             letter-spacing: 1.5px;
         }
         
