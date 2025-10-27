@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Page - Animated Sidebar (No Shadow)</title>
+    <title>Work Page - Animated Sidebar (Full Height Nav)</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -75,63 +75,42 @@
         }
 
         /* ------------------------------------------------ */
-        /* PROFILE HEADER - Logo dan Nama */
+        /* PROFILE HEADER - Dihapus/Disembunyikan */
         /* ------------------------------------------------ */
         #profile-header {
-            display: flex; align-items: center; 
-            padding: 15px 20px; 
-            margin-bottom: 20px; 
-            color: white; white-space: nowrap; overflow: hidden; 
-            box-sizing: border-box; 
-            background-color: #2a384b; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-            min-height: 65px; 
-        }
-        
-        #profile-header img {
-            width: 35px; height: 35px; border-radius: 50%; object-fit: cover; 
-            margin-right: 0; 
-            transition: margin-right 0.2s cubic-bezier(0.17, 0.82, 0.44, 0.98); 
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
-            flex-shrink: 0; 
-            padding-left: 5px; 
-        }
-        
-        #sidebar-left.expanded #profile-header img { 
-            margin-right: 15px; 
-            padding-left: 0; 
-        }
-
-        #profile-header span {
-            font-weight: 600; font-size: 15px; 
-            opacity: 0; max-width: 0; overflow: hidden; 
-            margin-left: 10px; 
-            line-height: 1.3; 
-            transition: opacity 0.2s ease-out 0.1s, max-width 0.2s ease-out 0.1s; 
-            flex-grow: 1;
-        }
-        #sidebar-left.expanded #profile-header span { 
-            opacity: 1; max-width: 100%; 
-            margin-left: 10px; 
+            display: none; 
+            min-height: 0;
+            padding: 0;
+            margin: 0;
+            border-bottom: none;
         }
 
         /* ------------------------------------------------ */
-        /* NAVIGASI - Item Menu */
+        /* NAVIGASI - Item Menu (Perubahan Utama di Sini) */
         /* ------------------------------------------------ */
         .nav-list-wrapper { 
-            display: flex; flex-direction: column; 
+            display: flex; 
+            flex-direction: column; 
             flex-grow: 1; 
-            padding: 0 10px 20px 10px; 
+            /* Perubahan: Distribusikan item secara merata */
+            justify-content: space-between; 
+            padding: 10px; /* Padding seragam di sekitar list */
+            height: 100%; /* Memastikan wrapper mengambil tinggi penuh */
+            box-sizing: border-box; /* Memastikan padding tidak melebihi tinggi 100% */
         }
         
         .nav-icon {
             position: relative; 
             padding: 12px 0; 
-            cursor: pointer; font-size: 18px; margin: 5px 0; 
+            cursor: pointer; font-size: 18px; 
+            /* Perubahan: Hapus margin vertikal agar Flexbox dapat mendistribusikan */
+            margin: 0; 
             color: cyan; box-sizing: border-box; 
             display: flex; align-items: center; 
             border-radius: 6px; 
             transition: all 0.2s ease-out;
+            /* Perubahan: Memastikan item mengambil ruang minimal yang diperlukan */
+            flex-shrink: 0; 
         }
 
         .nav-icon i { 
@@ -161,7 +140,6 @@
         #sidebar-left:not(.expanded) .nav-icon:nth-child(4) i { animation-delay: 0.6s; } 
         #sidebar-left:not(.expanded) .nav-icon:nth-child(5) i { animation-delay: 0.8s; } 
         #sidebar-left:not(.expanded) .nav-icon:nth-child(6) i { animation-delay: 1.0s; } 
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(7) i { animation-delay: 1.2s; } 
 
         /* PENTING: Matikan animasi ini saat Expanded atau Hovered */
         #sidebar-left.expanded .nav-icon i,
@@ -251,17 +229,11 @@
 
     <div id="sidebar-left">
         
-        <div id="profile-header">
-            <img src="logo.png" alt="Logo Pustakawan" /> 
-            <span>Dashboard<br>Pustakawan Lubangsa</span>
-        </div>
-        
         <div class="nav-list-wrapper">
             <div class="nav-icon active" data-target="iframe-absensi" title="Halaman Absensi"><i class="fas fa-clipboard-check"></i><span class="nav-label">Halaman Absensi</span></div>
             <div class="nav-icon" data-target="iframe-pinjam" title="Sistem Peminjaman"><i class="fas fa-book"></i><span class="nav-label">Sistem Peminjaman</span></div>
             <div class="nav-icon" data-target="iframe-library" title="Pencarian Library"><i class="fas fa-search"></i><span class="nav-label">Pencarian Library</span></div>
-            <div class="nav-icon" data-target="iframe-pengunjung" title="Halaman Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Halaman Pengunjung</span></div>
-            <div class="nav-icon" data-target="iframe-admin" title="Halaman Admin"><i class="fas fa-user-shield"></i><span class="nav-label">Halaman Admin</span></div>
+            <div class="nav-icon" data-target="iframe-pengunjung" title="Beranda Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Beranda Pengunjung</span></div>
             <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan"><i class="fas fa-atlas"></i> <span class="nav-label">Pedoman Penggunaan</span></div>
             <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi"><i class="fas fa-calendar-alt"></i><span class="nav-label">Jadwal Absensi</span></div>
         </div>
@@ -275,9 +247,8 @@
             <iframe id="iframe-jadwal" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/absensi/jadwal" src="" title="Jadwal Absensi"></iframe>
             <iframe id="iframe-library" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pencarian/dual" src="" title="Pencarian Library"></iframe>
             <iframe id="iframe-pinjam" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/sistempinjam/" src="" title="Sistem Peminjaman"></iframe>
-            <iframe id="iframe-pengunjung" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/" src="" title="Halaman Pengunjung"></iframe>
+            <iframe id="iframe-pengunjung" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/beranda" src="" title="Beranda Pengunjung"></iframe>
             <iframe id="iframe-pedoman" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pedoman/" src="" title="Pedoman Penggunaan"></iframe>
-            <iframe id="iframe-admin" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/admin" src="" title="Halaman Admin"></iframe>
 
         </div>
     </div>
