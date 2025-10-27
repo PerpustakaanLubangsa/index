@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Perpustakaan - Glitch Keyframe Terstruktur</title>
+    <style>
+        /* * --- Variabel & Reset (Diadaptasi dari kode favorit Anda) --- */
+        :root {
+            --dark-bg: #000000; 
+            --main-color: #00FFFF; /* Cyan */
+            --accent-glow: rgba(0, 255, 255, 0.7);
+            --glitch-red: #FF0077; 
+            --glitch-blue: #0077FF; 
+            --glitch-duration-cycle: 3s; /* Total waktu siklus glitch */
+        }
+
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: var(--dark-bg);
+            color: var(--main-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            /* Efek noise/scanline ringan */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100" opacity="0.08"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"></feTurbulence></filter><rect width="100%" height="100%" filter="url(#noise)" opacity="0.2"></rect></svg>');
+        }
+        
+        /* Scanline latar belakang (diambil dari kode favorit Anda) */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                #00000022, 
+                #00000022 1px, 
+                transparent 1px, 
+                transparent 2px
+            );
+            pointer-events: none; 
+            opacity: 0.1;
+            animation: backgroundShift 30s linear infinite; 
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 90%;
+            padding: 30px;
+            margin-top: 50px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            z-index: 10;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        /* Gaya untuk Foto Profil (BESAR, STABIL, TANPA GARIS) */
+        .profile-pic {
+            width: 180px; 
+            height: 180px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            
+            margin-bottom: 40px; 
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards 0.2s, 
+                       profileFloat 4s ease-in-out infinite 2s; /* Tambahkan efek mengambang */
+            position: relative; 
+            display: block; 
+            
+            background-color: #111; 
+            transform: translate(0, 0) skewX(0deg); 
+        }
+        
+        /* Tambahkan teks placeholder jika gambar tidak dimuat */
+        .profile-pic:not([src]):empty::before {
+            content: 'IMG';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            font-size: 3em; 
+            color: rgba(0, 255, 255, 0.5);
+        }
+
+        /* Glitch Text Styling */
+        .glitch-text {
+            font-size: 4em;
+            font-weight: bold;
+            color: var(--main-color);
+            text-shadow: 0 0 10px var(--accent-glow), 0 0 20px rgba(0, 255, 255, 0.7); 
+            position: relative;
+            opacity: 0;
+            animation: 
+                fadeIn 0.5s ease-out forwards 0.5s, 
+                strongGlitch var(--glitch-duration-cycle) step-end infinite 2s; /* Glitch! */
+            display: inline-block; 
+            transform: translateZ(0); 
+        }
+
+        /* Loading Bar Styling */
+        .loading-bar-container {
+            width: 0; 
+            height: 15px; 
+            background-color: #222;
+            border-radius: 2px;
+            margin-top: 20px; 
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards 0s; 
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 10px var(--main-color); 
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--main-color);
+            border-radius: 2px;
+            animation: fillBar 4.5s linear forwards 0s; 
+        }
+
+        /* * --- KEYFRAMES GLITCH KUAT (Diadaptasi dari kode favorit Anda) --- */
+        
+        @keyframes strongGlitch {
+            /* Keadaan Normal / Stabil: Sekitar 77% waktu */
+            0%, 77%, 100% { 
+                text-shadow: 0 0 20px var(--accent-glow), 0 0 5px var(--main-color);
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            /* Flicker Cepat 1 */
+            78% {
+                text-shadow: -4px 0 0 var(--glitch-red), 4px 0 0 var(--glitch-blue); 
+                transform: translateX(-3px); 
+                opacity: 0.8;
+            }
+
+            /* Distorsi Besar */
+            81% {
+                text-shadow: 
+                    15px 0 2px var(--glitch-red), 
+                    -15px 0 2px var(--glitch-blue); 
+                transform: translateX(-8px) skewX(8deg) scaleY(1.08); 
+                opacity: 0.3; 
+            }
+            
+            /* Flicker Cepat 2 */
+            84%, 87% {
+                text-shadow: 
+                    -3px 0 0 var(--glitch-red), 
+                    3px 0 0 var(--glitch-blue);
+                transform: translateX(2px);
+                opacity: 0.7;
+            }
+
+            /* Distorsi Vertikal */
+            92% {
+                text-shadow: 
+                    8px 0 0 var(--glitch-blue), 
+                    -8px 0 0 var(--glitch-red), 
+                    0 0 80px var(--main-color);
+                transform: translateX(4px) scaleY(1.08); 
+            }
+
+            /* Pulih Cepat ke Normal */
+            95% {
+                text-shadow: 0 0 20px var(--accent-glow);
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* --- KEYFRAMES LAIN --- */
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fillBar {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        
+        @keyframes profileFloat {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        @keyframes backgroundShift {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+<img src="2.png" alt="Foto Profil" class="profile-pic" id="profilePic">
+
+        <h1 class="glitch-text" id="glitchText">PERPUSTAKAAN LUBANGSA</h1>
+        
+        <div class="loading-bar-container" id="loadingBarContainer">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const glitchText = document.getElementById('glitchText');
+            const loadingBarContainer = document.getElementById('loadingBarContainer');
+            const totalDelay = 5000; // Total 5 detik
+            
+            // Atur lebar loading bar agar sama dengan lebar teks
+            loadingBarContainer.style.width = `${glitchText.offsetWidth}px`;
+            
+            // Karena glitch sekarang dikontrol sepenuhnya oleh CSS Keyframes (strongGlitch),
+            // kita hanya perlu menghentikan animasi di akhir sebelum navigasi.
+
+            // Hentikan glitch 100ms sebelum navigasi
+            setTimeout(() => {
+                glitchText.style.animation = 'fadeIn 0.5s ease-out forwards'; // Ganti animasi glitch dengan hanya fadeIn
+                glitchText.style.transform = 'translate(0, 0) skewX(0deg)';
+                glitchText.style.textShadow = '0 0 10px var(--main-color)'; 
+            }, totalDelay - 100); 
+
+            // Navigasi halaman 
+            setTimeout(() => {
+                window.location.href = 'https://perpustakaanlubangsa.github.io/index/workpage';
+            }, totalDelay);
+        });
+    </script>
+</body>
+</html>
