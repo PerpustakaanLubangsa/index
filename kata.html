@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kata Acak Tebal (Tidak Ada Duplikasi)</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <style>
+        /* Pengaturan Global & Body */
+        body {
+            /* Latar belakang FULL HITAM */
+            background-color: #000000; 
+            color: #ffffff;
+            /* Gunakan Roboto sebagai font utama */
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* Gaya untuk elemen penampil kata */
+        #kataTampil {
+            font-size: 4em; 
+            font-weight: 900; 
+            text-align: center;
+            color: #00BCD4; /* Aksen Cyan */
+            padding: 20px;
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.5); 
+            transition: opacity 0.5s ease-in-out; 
+            max-width: 90vw;
+            line-height: 1.2; 
+        }
+    </style>
+</head>
+<body>
+    <div id="kataTampil">Memuat Kata...</div>
+
+    <script>
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8DOLvUXXqfpguhs7j3_Ex6NhBVHk60i8",
+            authDomain: "datapengunjung-e80b8.firebaseapp.com",
+            databaseURL: "https://datapengunjung-e80b8-default-rtdb.firebaseio.com",
+            projectId: "datapengunjung-e80b8",
+            storageBucket: "datapengunjung-e80b8.firebasestorage.app",
+            messagingSenderId: "793849975208",
+            appId: "1:793849975208:web:5f046eb7d153cf16378d9d"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const kalimatRef = database.ref('kalimat');
+        const kataTampil = document.getElementById('kataTampil');
+        
+        let daftarKalimat = [];
+        let intervalId = null;
+        // Variabel baru: Menyimpan indeks kalimat yang BELUM ditampilkan
+        let indeksBelumTampil = []; 
+
+        /**
+         * Mengisi ulang array indeksBelumTampil (0, 1, 2, ... N-1)
+         */
+        function resetIndeks() {
+            indeksBelumTampil = Array.from({ length: daftarKalimat.length }, (_, i) => i);
+        }
+
+        function mulaiRotasiKata(dataSnapshot) {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+
+            if (dataSnapshot.exists()) {
+                const data = dataSnapshot.val();
+                daftarKalimat = Object.values(data).map(item => item.teks);
+                
+                if (daftarKalimat.length > 0) {
+                    // Reset indeks saat data baru dimuat
+                    resetIndeks(); 
+                    
+                    tampilkanKataAcak(0); 
+                    // Interval 10 detik (10000ms)
+                    intervalId = setInterval(tampilkanKataAcak, 10000); 
+                } else {
+                    kataTampil.textContent = "Tidak ada kata yang ditemukan.";
+                }
+            } else {
+                kataTampil.textContent = "Belum ada kalimat yang tersimpan di database.";
+            }
+        }
+
+        function tampilkanKataAcak(delay = 500) {
+            if (daftarKalimat.length === 0) return;
+            
+            // 1. Cek apakah semua indeks sudah habis
+            if (indeksBelumTampil.length === 0) {
+                console.log("Semua kata sudah ditampilkan. Mengulang daftar...");
+                resetIndeks(); // Mulai siklus baru
+            }
+
+            // 2. Pilih indeks acak dari daftar yang belum ditampilkan
+            const randomIndeksDalamList = Math.floor(Math.random() * indeksBelumTampil.length);
+            
+            // 3. Ambil indeks sebenarnya dari daftar kalimat
+            const indeksKataSebenarnya = indeksBelumTampil[randomIndeksDalamList];
+            
+            // 4. Hapus indeks yang baru saja dipilih dari daftar indeksBelumTampil
+            indeksBelumTampil.splice(randomIndeksDalamList, 1);
+
+            const kataAcak = daftarKalimat[indeksKataSebenarnya];
+
+            // Fade-out
+            kataTampil.style.opacity = 0;
+
+            // Ubah teks setelah delay (transisi)
+            setTimeout(() => {
+                kataTampil.textContent = kataAcak;
+                
+                // Fade-in
+                kataTampil.style.opacity = 1; 
+            }, delay); 
+        }
+
+        // Mulai mendengarkan data dari Firebase
+        kalimatRef.on('value', mulaiRotasiKata, (error) => {
+            console.error("Error saat membaca data: ", error);
+            kataTampil.textContent = `Error memuat data: ${error.message}`;
+        });
+    </script>
+</body>
+</html>

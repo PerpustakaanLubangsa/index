@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Tambah & Hapus Kalimat</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <style>
+        /* Variabel Warna */
+        :root {
+            --color-primary: #00BCD4; /* Cyan Terang */
+            --color-danger: #e74c3c; /* Merah untuk Hapus */
+            --color-text-dark: #333;
+            --color-text-light: #666;
+            --color-bg-light: #f4f7f6; 
+            --color-white: #ffffff;
+            --color-shadow: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Pengaturan Global & Body */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            /* Konten admin mungkin lebih panjang, jadi kita tidak pusatkan ke tengah vertikal */
+            align-items: flex-start; 
+            min-height: 100vh;
+            padding: 50px 20px;
+        }
+
+        /* Kontainer Utama (Card) */
+        .container {
+            background-color: var(--color-white); 
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--color-shadow);
+            width: 100%;
+            max-width: 800px; /* Lebar lebih besar untuk daftar */
+        }
+        
+        h1 {
+            color: var(--color-primary); 
+            font-weight: 300; 
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+             color: var(--color-text-dark);
+             margin-top: 40px;
+             border-bottom: 1px dashed #ccc;
+             padding-bottom: 5px;
+             font-weight: 400;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: var(--color-primary);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.3);
+        }
+
+        /* Gaya Tombol Simpan */
+        .btn-simpan {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3);
+            margin-right: 15px;
+        }
+
+        .btn-simpan:hover {
+            background-color: #00A3B5; 
+        }
+
+        /* Gaya Tombol Hapus */
+        .btn-hapus {
+            background-color: var(--color-danger);
+            color: var(--color-white);
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .btn-hapus:hover {
+            background-color: #c0392b; 
+        }
+        
+        /* Daftar Kalimat */
+        #daftarKalimat {
+            list-style: none;
+            padding: 0;
+        }
+
+        #daftarKalimat li {
+            background-color: var(--color-bg-light);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 5px solid var(--color-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+        }
+
+        .kalimat-teks {
+            flex-grow: 1;
+        }
+        
+        /* Pesan Status */
+        #pesanStatus {
+            margin-top: 15px;
+            font-weight: 600;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>➕ Administrasi Kalimat</h1>
+
+        <h2>Tambah Kalimat Baru</h2>
+        <textarea id="inputKalimat" rows="4" cols="50" placeholder="Ketik kalimat baru di sini..."></textarea>
+        <br>
+        <button class="btn-simpan" onclick="simpanKalimat()">Simpan Kalimat</button>
+        <p id="pesanStatus"></p>
+
+        <hr>
+
+        <h2>Daftar Kalimat Tersimpan</h2>
+        <ul id="daftarKalimat">
+            <li>Memuat data...</li>
+        </ul>
+    </div>
+
+    <script>
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8DOLvUXXqfpguhs7j3_Ex6NhBVHk60i8",
+            authDomain: "datapengunjung-e80b8.firebaseapp.com",
+            databaseURL: "https://datapengunjung-e80b8-default-rtdb.firebaseio.com",
+            projectId: "datapengunjung-e80b8",
+            storageBucket: "datapengunjung-e80b8.firebasestorage.app",
+            messagingSenderId: "793849975208",
+            appId: "1:793849975208:web:5f046eb7d153cf16378d9d"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const kalimatRef = database.ref('kalimat');
+        const daftarKalimat = document.getElementById('daftarKalimat');
+
+        // --- FUNGSI TAMBAH (SIMPAN) ---
+        function simpanKalimat() {
+            const input = document.getElementById('inputKalimat');
+            const kalimat = input.value.trim();
+            const pesanStatus = document.getElementById('pesanStatus');
+
+            if (kalimat === "") {
+                pesanStatus.textContent = "Kalimat tidak boleh kosong!";
+                pesanStatus.style.color = 'red';
+                return;
+            }
+
+            const dataKalimat = {
+                teks: kalimat,
+                timestamp: firebase.database.ServerValue.TIMESTAMP 
+            };
+
+            kalimatRef.push(dataKalimat)
+                .then(() => {
+                    pesanStatus.textContent = "✅ Kalimat berhasil disimpan!";
+                    pesanStatus.style.color = 'green';
+                    input.value = ''; 
+                })
+                .catch((error) => {
+                    pesanStatus.textContent = "❌ Gagal menyimpan: " + error.message;
+                    pesanStatus.style.color = 'red';
+                });
+        }
+        
+        // --- FUNGSI HAPUS ---
+        function hapusKalimat(key) {
+            if (confirm("Apakah Anda yakin ingin menghapus kalimat ini?")) {
+                kalimatRef.child(key).remove()
+                    .then(() => {
+                        console.log("Kalimat dengan ID: " + key + " berhasil dihapus.");
+                        // Data akan diperbarui secara otomatis oleh listener .on('value')
+                    })
+                    .catch((error) => {
+                        alert("Gagal menghapus kalimat: " + error.message);
+                        console.error("Error menghapus data: ", error);
+                    });
+            }
+        }
+        
+        // --- FUNGSI TAMPILKAN DAFTAR (REAL-TIME LISTENER) ---
+        kalimatRef.on('value', (snapshot) => {
+            daftarKalimat.innerHTML = ''; // Bersihkan daftar yang ada
+            
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                
+                // Iterasi terbalik agar data terbaru muncul di atas
+                const keys = Object.keys(data).reverse(); 
+
+                keys.forEach(key => {
+                    const kalimatItem = data[key];
+                    
+                    const li = document.createElement('li');
+                    
+                    const teksSpan = document.createElement('span');
+                    teksSpan.className = 'kalimat-teks';
+                    teksSpan.textContent = kalimatItem.teks;
+                    
+                    const buttonHapus = document.createElement('button');
+                    buttonHapus.className = 'btn-hapus';
+                    buttonHapus.textContent = 'Hapus 🗑️';
+                    // Panggil fungsi hapusKalimat() dengan key/ID spesifik
+                    buttonHapus.onclick = () => hapusKalimat(key); 
+                    
+                    li.appendChild(teksSpan);
+                    li.appendChild(buttonHapus);
+                    
+                    daftarKalimat.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = "Belum ada kalimat yang tersimpan.";
+                daftarKalimat.appendChild(li);
+            }
+        }, (error) => {
+            console.error("Error saat membaca data: ", error);
+            daftarKalimat.innerHTML = `<li>Error memuat data: ${error.message}</li>`;
+        });
+    </script>
+</body>
+</html>
