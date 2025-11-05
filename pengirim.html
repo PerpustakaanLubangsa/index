@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengirim Notifikasi Perpustakaan - Dark Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+    <style>
+        /* ================================================= */
+        /* VARIABEL DAN TEMA GELAP */
+        /* ================================================= */
+        :root {
+            --color-primary-neon: #00bcd4; /* Neon Biru */
+            --color-background: #1a202c; /* Background gelap */
+            --color-card-bg: #2d3748; /* Warna kartu lebih gelap */
+            --color-text-light: #edf2f7; /* Teks terang */
+            --color-input-bg: #4a5568; /* Input gelap */
+            --color-input-text: #edf2f7; /* Teks input terang */
+            --color-success: #38a169;
+            --color-error: #e53e3e;
+            --shadow-elevation: 0 15px 35px rgba(0, 0, 0, 0.4); /* Shadow lebih kuat */
+            --shadow-input-focus: 0 0 0 3px rgba(0, 188, 212, 0.6);
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+        .card {
+            background-color: var(--color-card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-elevation);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        h2 {
+            color: var(--color-primary-neon);
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ================================================= */
+        /* GAYA INPUT GROUP (DISESUAIKAN UNTUK DARK MODE) */
+        /* ================================================= */
+        .input-group {
+            display: flex; 
+            gap: 10px;
+            width: 100%;
+            position: relative;
+            margin-bottom: 25px;
+            background-color: var(--color-input-bg);
+            border-radius: 12px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"] {
+            flex-grow: 1; 
+            height: 50px;
+            padding: 0 15px;
+            border: none;
+            border-radius: 12px 0 0 12px;
+            font-size: 1em;
+            background-color: transparent;
+            color: var(--color-input-text); /* Teks input terang */
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input[type="text"]:focus {
+            box-shadow: none;
+        }
+        .input-group:focus-within {
+             box-shadow: var(--shadow-input-focus);
+        }
+        
+        /* ================================================= */
+        /* GAYA TOMBOL IKON */
+        /* ================================================= */
+        .send-button {
+            width: 50px; 
+            height: 50px;
+            min-width: 50px;
+            
+            background-color: var(--color-primary-neon);
+            color: var(--color-card-bg); 
+            border: none;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .send-button:hover {
+            background-color: #008c9e;
+            transform: scale(1.02);
+        }
+        .send-button:active {
+            transform: scale(0.98);
+        }
+        .send-button[disabled] {
+            background-color: #4a5568;
+            color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        /* ================================================= */
+        /* GAYA STATUS DAN LOADING */
+        /* ================================================= */
+        #statusMessage {
+            font-size: 0.9em;
+            font-weight: 600;
+            min-height: 20px;
+            text-align: center;
+            width: 100%;
+            transition: color 0.3s;
+        }
+        .success { color: var(--color-success); }
+        .error { color: var(--color-error); }
+        .loading { color: var(--color-primary-neon); }
+
+        /* Animasi Loader Sederhana */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Kirim Notifikasi</h2>
+        <div class="input-group">
+            <input type="text" id="notificationMessage" placeholder="Pesan penting untuk dashboard..." autofocus>
+            <button class="send-button" onclick="sendNotification()" id="sendButton" title="Kirim Notifikasi">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        // Konfigurasi Firebase yang sama dengan Dashboard
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6gaVW3ye680YylqzSebZugmQepYRA4g4",
+            authDomain: "pengunjung-4489b.firebaseapp.com",
+            databaseURL: "https://pengunjung-4489b-default-rtdb.firebaseio.com",
+            projectId: "pengunjung-4489b",
+            storageBucket: "pengunjung-4489b.firebasestorage.app",
+            messagingSenderId: "233634425303",
+            appId: "1:233634425303:web:9d45d775e703b94843c392"
+        };
+
+        // Inisialisasi Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const database = firebase.database();
+        const notificationRef = database.ref('notifications');
+        const sendButton = document.getElementById('sendButton');
+
+        // Hapus node 'notifications' setiap kali halaman dimuat
+        notificationRef.remove()
+            .then(() => {
+                console.log("Pesan notifikasi lama di Firebase berhasil dibersihkan saat halaman dimuat.");
+            })
+            .catch((error) => {
+                console.error("Gagal membersihkan pesan notifikasi lama:", error);
+            });
+        
+        // Fungsi untuk menampilkan status, loading, atau error
+        function showStatus(message, type = 'info') {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = '';
+            
+            if (type === 'loading') {
+                statusElement.innerHTML = `<i class="fas fa-circle-notch"></i> ${message}`;
+                statusElement.classList.add('loading');
+                sendButton.setAttribute('disabled', 'true');
+            } else if (type === 'success') {
+                statusElement.classList.add('success');
+                sendButton.removeAttribute('disabled');
+            } else if (type === 'error') {
+                statusElement.classList.add('error');
+                sendButton.removeAttribute('disabled');
+            } else {
+                 sendButton.removeAttribute('disabled');
+            }
+        }
+
+        function sendNotification() {
+            const messageInput = document.getElementById('notificationMessage');
+            const message = messageInput.value.trim();
+
+            if (message === "") {
+                showStatus("Pesan tidak boleh kosong!", 'error');
+                return;
+            }
+
+            // Tampilkan status loading
+            showStatus("Mengirim...", 'loading');
+
+            const notificationData = {
+                message: message,
+                timestamp: firebase.database.ServerValue.TIMESTAMP 
+            };
+
+            const messagePromise = notificationRef.push(notificationData);
+
+            messagePromise
+                .then(() => {
+                    showStatus("Notifikasi berhasil dikirim!", 'success');
+                    messageInput.value = '';
+                    messageInput.focus();
+                    
+                    // Bersihkan status setelah 3 detik
+                    setTimeout(() => showStatus(''), 3000);
+
+                    // Hapus pesan dari database setelah 5 detik
+                    setTimeout(() => {
+                        messagePromise.remove()
+                            .catch((error) => {
+                                console.error("Gagal menghapus pesan Firebase:", error);
+                            });
+                    }, 5000); 
+                })
+                .catch((error) => {
+                    console.error("Error saat mengirim notifikasi: ", error);
+                    showStatus("Gagal mengirim: " + error.message, 'error');
+                });
+        }
+        
+        // Logika Enter Keypress
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageInput = document.getElementById('notificationMessage');
+            
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendNotification();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
