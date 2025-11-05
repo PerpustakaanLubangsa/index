@@ -2,169 +2,138 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Perpustakaan Lubangsa</title>
-   <link rel="icon" type="image/png" href="logo.png" />
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Kata Acak Tebal (Tidak Ada Duplikasi)</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
     <style>
-        /* Dark Mode Color Palette */
-        :root {
-            --color-bg-dark: #1a1a1a; /* Latar belakang sangat gelap */
-            --color-card-dark: #2c2c2c; /* Kartu sedikit lebih terang */
-            --color-neon-cyan: #00FFFF; /* Aksen Neon Cyan */
-            --color-text-light: #e0e0e0;
-            --color-text-secondary: #aaaaaa;
-        }
-
+        /* Pengaturan Global & Body */
         body {
+            /* Latar belakang FULL HITAM */
+            background-color: #000000; 
+            color: #ffffff;
+            /* Gunakan Roboto sebagai font utama */
+            font-family: 'Roboto', sans-serif;
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
+            padding: 0;
             display: flex;
-            flex-direction: column;
-            background-color: var(--color-bg-dark); /* Dark Mode BG */
-            overflow: hidden;
-        }
-
-        /* Menghapus .header karena diminta */
-
-        /* Kontainer Utama untuk Dua Frame */
-        .main-container {
-            display: flex;
-            flex-grow: 1;
-            padding: 30px; /* Padding lebih besar di dark mode */
-            gap: 30px;
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
             overflow: hidden; 
         }
 
-        /* Wadah untuk Setiap Halaman (50%) */
-        .page-wrapper {
-            flex: 1;
-            position: relative;
-            background-color: var(--color-card-dark);
-            border-radius: 15px;
-            /* Bayangan neon yang mencolok */
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2); 
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Judul Preview */
-        .page-wrapper h2 {
-            padding: 15px 20px;
-            margin: 0;
-            font-size: 1.2em;
-            font-weight: 700;
-            background-color: #1f1f1f; /* Header judul lebih gelap */
-            color: var(--color-neon-cyan);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
-            z-index: 10;
-        }
-
-        /* Iframe untuk Tampilan Preview */
-        .preview-iframe {
-            flex-grow: 1;
-            width: 100%;
-            border: none;
-            pointer-events: none; 
-            /* Catatan: Konten iframe itu sendiri harus mendukung dark mode agar terlihat serasi. */
-        }
-
-        /* Overlay Klickable */
-        .click-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 20; 
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            opacity: 0; 
-            transition: opacity 0.3s ease, background-color 0.3s ease;
-        }
-
-        /* Efek Hover Keren (Neon Glow) */
-        .page-wrapper:hover {
-            transform: translateY(-5px); 
-            box-shadow: 0 0 25px var(--color-neon-cyan); /* Glow lebih kuat saat hover */
-        }
-
-        .page-wrapper:hover .click-overlay {
-            opacity: 1;
-            background-color: rgba(0, 0, 0, 0.75); /* Overlay lebih gelap saat hover */
-        }
-
-        .click-overlay-content {
-            color: white;
-            font-size: 1.7em;
-            font-weight: bold;
-            text-shadow: 0 0 10px #000;
-        }
-
-        .click-overlay-content i {
-            font-size: 3.5em;
-            margin-bottom: 10px;
-            color: var(--color-neon-cyan);
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.7); /* Neon icon glow */
+        /* Gaya untuk elemen penampil kata */
+        #kataTampil {
+            font-size: 3em; 
+            font-weight: 900; 
+            text-align: center;
+            color: white; /* Aksen Cyan */
+            padding: 20px;
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.5); 
+            transition: opacity 0.5s ease-in-out; 
+            max-width: 99vw;
+            line-height: 1.2; 
         }
     </style>
 </head>
 <body>
-    
-    <div class="main-container">
-        
-        <div class="page-wrapper" id="work-wrapper">
-            <h2><i class="fas fa-hammer"></i> WORK PAGE</h2>
-            
-            <iframe 
-                class="preview-iframe" 
-                src="https://perpustakaanlubangsa.github.io/index/workpage" 
-                title="Preview Halaman Kerja">
-            </iframe>
-            
-            <a 
-                href="https://perpustakaanlubangsa.github.io/index/workpage" 
-                target="_blank" 
-                class="click-overlay" 
-                rel="noopener noreferrer"
-                title="Klik untuk Buka Halaman Kerja di tab baru">
-                <div class="click-overlay-content">
-                    <i class="fas fa-external-link-alt"></i>
-                    <div>ACCESS FULL PAGE</div>
-                </div>
-            </a>
-        </div>
-        
-        <div class="page-wrapper" id="investor-wrapper">
-            <h2><i class="fas fa-chart-line"></i> INVESTOR PAGE</h2>
-            
-            <iframe 
-                class="preview-iframe" 
-                src="https://perpustakaanlubangsa.github.io/index/investorpage" 
-                title="Preview Halaman Investor">
-            </iframe>
-            
-            <a 
-                href="https://perpustakaanlubangsa.github.io/index/investorpage" 
-                target="_blank" 
-                class="click-overlay" 
-                rel="noopener noreferrer"
-                title="Klik untuk Buka Halaman Investor di tab baru">
-                <div class="click-overlay-content">
-                    <i class="fas fa-external-link-alt"></i>
-                    <div>ACCESS FULL PAGE</div>
-                </div>
-            </a>
-        </div>
+    <div id="kataTampil">Memuat Kata...</div>
 
-    </div>
-    
+    <script>
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8DOLvUXXqfpguhs7j3_Ex6NhBVHk60i8",
+            authDomain: "datapengunjung-e80b8.firebaseapp.com",
+            databaseURL: "https://datapengunjung-e80b8-default-rtdb.firebaseio.com",
+            projectId: "datapengunjung-e80b8",
+            storageBucket: "datapengunjung-e80b8.firebasestorage.app",
+            messagingSenderId: "793849975208",
+            appId: "1:793849975208:web:5f046eb7d153cf16378d9d"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const kalimatRef = database.ref('kalimat');
+        const kataTampil = document.getElementById('kataTampil');
+        
+        let daftarKalimat = [];
+        let intervalId = null;
+        // Variabel baru: Menyimpan indeks kalimat yang BELUM ditampilkan
+        let indeksBelumTampil = []; 
+
+        /**
+         * Mengisi ulang array indeksBelumTampil (0, 1, 2, ... N-1)
+         */
+        function resetIndeks() {
+            indeksBelumTampil = Array.from({ length: daftarKalimat.length }, (_, i) => i);
+        }
+
+        function mulaiRotasiKata(dataSnapshot) {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+
+            if (dataSnapshot.exists()) {
+                const data = dataSnapshot.val();
+                daftarKalimat = Object.values(data).map(item => item.teks);
+                
+                if (daftarKalimat.length > 0) {
+                    // Reset indeks saat data baru dimuat
+                    resetIndeks(); 
+                    
+                    tampilkanKataAcak(0); 
+                    // Interval 10 detik (10000ms)
+                    intervalId = setInterval(tampilkanKataAcak, 20000); 
+                } else {
+                    kataTampil.textContent = "Tidak ada kata yang ditemukan.";
+                }
+            } else {
+                kataTampil.textContent = "Belum ada kalimat yang tersimpan di database.";
+            }
+        }
+
+        function tampilkanKataAcak(delay = 500) {
+            if (daftarKalimat.length === 0) return;
+            
+            // 1. Cek apakah semua indeks sudah habis
+            if (indeksBelumTampil.length === 0) {
+                console.log("Semua kata sudah ditampilkan. Mengulang daftar...");
+                resetIndeks(); // Mulai siklus baru
+            }
+
+            // 2. Pilih indeks acak dari daftar yang belum ditampilkan
+            const randomIndeksDalamList = Math.floor(Math.random() * indeksBelumTampil.length);
+            
+            // 3. Ambil indeks sebenarnya dari daftar kalimat
+            const indeksKataSebenarnya = indeksBelumTampil[randomIndeksDalamList];
+            
+            // 4. Hapus indeks yang baru saja dipilih dari daftar indeksBelumTampil
+            indeksBelumTampil.splice(randomIndeksDalamList, 1);
+
+            const kataAcak = daftarKalimat[indeksKataSebenarnya];
+
+            // Fade-out
+            kataTampil.style.opacity = 0;
+
+            // Ubah teks setelah delay (transisi)
+            setTimeout(() => {
+                kataTampil.textContent = kataAcak;
+                
+                // Fade-in
+                kataTampil.style.opacity = 1; 
+            }, delay); 
+        }
+
+        // Mulai mendengarkan data dari Firebase
+        kalimatRef.on('value', mulaiRotasiKata, (error) => {
+            console.error("Error saat membaca data: ", error);
+            kataTampil.textContent = `Error memuat data: ${error.message}`;
+        });
+    </script>
 </body>
 </html>
