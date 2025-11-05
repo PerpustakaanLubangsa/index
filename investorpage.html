@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Perpustakaan Lubangsa - Dynamic Layout V8 | Full-Screen Overlay Final</title>
+    <title>Dashboard Perpustakaan Lubangsa - Dynamic Layout V7 | Full-Width Kunjungan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 
@@ -25,7 +25,7 @@
             --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.2); 
             --shadow-light: 0 8px 25px rgba(0, 0, 0, 0.08); 
             --radius-card: 16px; 
-            --content-padding: 30px; 
+            --content-padding: 30px; /* Padding utama, akan dihapus di sisi Kunjungan */
 
             /* Gaya Jam Flip */
             --clock-height: 50px;
@@ -74,8 +74,10 @@
             color: var(--color-dark-text);
             display: flex;
             flex-direction: column;
+            /* Padding horizontal tetap di sisi kiri */
             padding: var(--content-padding);
             padding-bottom: var(--content-padding); 
+            
             gap: 0; 
             border-right: 4px solid var(--color-primary-neon); 
         }
@@ -87,6 +89,7 @@
             margin-bottom: 10px; 
         }
         
+        /* ... Gaya Jam Digital lainnya (Tidak Berubah) ... */
         #flip-clock .time-display { display: flex; justify-content: center; gap: 10px; margin-bottom: 5px; cursor: default; }
         #flip-clock .flip-card { 
             font-family: 'Space Mono', monospace; font-size: 2.2em; font-weight: 700; line-height: var(--clock-height);
@@ -130,11 +133,12 @@
         /* ================================================= */
 
         .main-content-right {
-            background-color: var(--color-card-background); 
+            background-color: var(--color-background-soft); 
             display: flex;
             flex-direction: column;
             overflow: hidden;
             box-shadow: none;
+            /* --- PERUBAHAN UTAMA: Padding Dihapus Semua agar full-width --- */
             padding: 0; 
         }
 
@@ -149,56 +153,39 @@
             height: 100%;
             border: none;
             border-radius: 0; 
-            background: transparent; 
+            /* Background iframe harus sama dengan background container agar tidak ada sisa warna */
+            background: var(--color-background-soft); 
             box-shadow: none; 
             overflow-y: auto;
         }
         
+        /* Agar iframe kunjungan benar-benar full-height, kita harus memindahkan background terang
+           ke elemen .main-content-right itu sendiri. */
+        .main-content-right {
+             background-color: var(--color-card-background); /* Background form putih dipindahkan ke sini */
+        }
+        .main-content-right {
+            background-color: var(--color-card-background);
+        }
+        
+        /* Iframe sekarang hanya perlu transparansi untuk mengikuti background container */
+        .iframe-area.kunjungan .content-iframe {
+            background: transparent; 
+        }
+
+
         .iframe-area.kunjungan .content-iframe:hover {
             transform: none;
             box-shadow: none;
         }
 
         /* ================================================= */
-        /* 5. Iframe Overlay Full-Screen (Modul Baru - FINAL) */
-        /* ================================================= */
-
-        #overlay-popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            /* Mulai dengan tersembunyi */
-            opacity: 0;
-            pointer-events: none; 
-            z-index: 1000; 
-            background-color: transparent; 
-            transition: opacity 0.5s ease-in-out; 
-        }
-
-        #overlay-popup.active {
-            opacity: 1;
-            pointer-events: auto; /* Aktifkan interaksi saat muncul */
-        }
-
-        #overlay-popup .overlay-iframe {
-            /* Full Screen */
-            width: 100%;
-            height: 100%;
-            border: none; 
-            border-radius: 0; 
-            box-shadow: none; 
-            /* Set background di sini. Sesuaikan dengan background konten iframe Anda. */
-            background: var(--color-card-background); 
-        }
-        
-        /* ================================================= */
-        /* 6. Scrollbar Kustom & Responsif */
+        /* 5. Scrollbar Kustom & Responsif */
         /* ================================================= */
         
         .iframe-area .content-iframe::-webkit-scrollbar { width: 8px; height: 8px; }
         .sidebar-left .iframe-area .content-iframe::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.3); border-radius: 10px; }
+        /* Scrollbar kanan harus mengikuti background container yang baru (putih) */
         .main-content-right .iframe-area .content-iframe::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; }
         
         @media (max-width: 1000px) {
@@ -208,12 +195,14 @@
             
             .main-content-right { 
                 min-height: 50vh; 
+                /* Mengembalikan padding di mobile agar tidak menempel tepi layar kecil */
                 padding: var(--content-padding); 
                 padding-top: 0;
+                /* Background dikembalikan ke soft karena mobile memiliki background terpisah */
                 background-color: var(--color-background-soft); 
             }
             .iframe-area.kunjungan .content-iframe {
-                 background: transparent; 
+                 background: transparent; /* Transparan agar mobile terlihat soft */
             }
 
             .iframe-area.pencarian, .iframe-area.kunjungan { padding-top: 0; padding-bottom: 0; }
@@ -266,16 +255,7 @@
 
     </main>
 
-    <div id="overlay-popup" aria-hidden="true">
-        <iframe 
-            src="https://perpustakaanlubangsa.github.io/pengumuman" 
-            class="overlay-iframe"
-            title="Pesan Pengumuman atau Notifikasi Penting"
-            loading="eager">
-        </iframe>
-    </div>
     <script>
-        // --- LOGIKA JAM DIGITAL ---
         function animateFlip(element, newValue) {
             const oldValue = element.textContent;
             if (oldValue !== newValue) {
@@ -323,101 +303,6 @@
 
         updateClock();
         setInterval(updateClock, 1000);
-        
-        // --- LOGIKA OVERLAY POPUP YANG DIPERBARUI ---
-        
-        const overlay = document.getElementById('overlay-popup');
-        const overlayIframe = document.querySelector('#overlay-popup .overlay-iframe'); // Dapatkan elemen iframe
-        let overlayTimer;
-        let isOverlayActive = false;
-        let hasInteracted = false;
-        const INACTIVITY_TIME = 10000; // Waktu Inaktivitas (10 detik)
-
-        // Listener Global untuk menyembunyikan overlay
-        function hideOverlayListener(event) {
-            // Hanya menyembunyikan jika overlay aktif
-            if (isOverlayActive) {
-                hideOverlay();
-            }
-        }
-
-        function showOverlay() {
-            if (hasInteracted) return;
-
-            // Hentikan listener pembatal sebelum menampilkan overlay
-            document.removeEventListener('mousemove', interactionCanceller);
-            document.removeEventListener('keydown', interactionCanceller);
-            
-            // Hapus listener Iframe lama (pencegahan duplikasi)
-            overlayIframe.removeEventListener('click', hideOverlayListener);
-            overlayIframe.removeEventListener('keydown', hideOverlayListener);
-
-            overlay.classList.add('active');
-            overlay.setAttribute('aria-hidden', 'false');
-            isOverlayActive = true;
-            
-            // Set listener interaksi setelah overlay muncul (untuk menyembunyikan)
-            // Mendeteksi gerakan mouse/ketukan di DOKUMEN INDUK
-            document.addEventListener('mousemove', hideOverlayListener);
-            document.addEventListener('keydown', hideOverlayListener);
-            
-            // Mendeteksi klik/ketukan di DALAM IFRAME
-            // Ini adalah perbaikan utama, karena interaksi di iframe tidak terdeteksi oleh dokumen induk.
-            overlayIframe.addEventListener('click', hideOverlayListener);
-            overlayIframe.addEventListener('keydown', hideOverlayListener);
-        }
-
-        function hideOverlay() {
-            if (!isOverlayActive) return;
-
-            overlay.classList.remove('active');
-            overlay.setAttribute('aria-hidden', 'true');
-            isOverlayActive = false;
-
-            // Hapus event listener penyembunyian dari DOKUMEN INDUK dan IFRAME
-            document.removeEventListener('mousemove', hideOverlayListener);
-            document.removeEventListener('keydown', hideOverlayListener);
-            overlayIframe.removeEventListener('click', hideOverlayListener);
-            overlayIframe.removeEventListener('keydown', hideOverlayListener);
-
-            // Mulai ulang timer setelah disembunyikan
-            startOverlayTimer();
-        }
-
-        function interactionCanceller(event) {
-            // Interaksi (mouse atau keyboard) terdeteksi saat timer berjalan (belum aktif)
-            if (!isOverlayActive) {
-                hasInteracted = true;
-                clearTimeout(overlayTimer);
-
-                // Hapus listener pembatal saat interaksi pertama
-                document.removeEventListener('mousemove', interactionCanceller);
-                document.removeEventListener('keydown', interactionCanceller);
-
-                // Mulai ulang timer agar overlay mencoba muncul kembali 10 detik setelah interaksi ini
-                startOverlayTimer();
-            }
-        }
-
-        function startOverlayTimer() {
-            clearTimeout(overlayTimer);
-            if (isOverlayActive) return;
-
-            hasInteracted = false;
-
-            // Set listener interaksi awal (untuk membatalkan timer)
-            document.addEventListener('mousemove', interactionCanceller);
-            document.addEventListener('keydown', interactionCanceller);
-
-            overlayTimer = setTimeout(() => {
-                if (!hasInteracted) {
-                    showOverlay();
-                }
-            }, INACTIVITY_TIME); 
-        }
-
-        // Mulai proses overlay saat halaman selesai dimuat (INITIAL RUN)
-        window.addEventListener('load', startOverlayTimer);
     </script>
 
 </body>
