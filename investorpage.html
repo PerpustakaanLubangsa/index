@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Perpustakaan Lubangsa - Dynamic Layout V7.9 | Iframe Kanan Lebih Lebar</title>
+    <title>Dashboard Perpustakaan Lubangsa - Dynamic Layout V7.9 | Notifikasi Kanan Bawah</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght==700&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
 
     <style>
         /* ================================================= */
@@ -67,7 +70,6 @@
             width: 100vw; 
             height: 100vh;
             display: grid;
-            /* 💡 PERUBAHAN: Iframe Kanan diperlebar dari 0.70fr menjadi 0.75fr */
             grid-template-columns: 0.25fr 1fr; 
             box-shadow: none; 
             overflow: hidden;
@@ -208,7 +210,64 @@
             .iframe-area.pencarian, .iframe-area.kunjungan { padding-top: 0; padding-bottom: 0; }
             .iframe-area.pencarian .content-iframe { background: var(--color-dark-bg); backdrop-filter: none; -webkit-backdrop-filter: none; border: none; box-shadow: none; }
         }
+
+        /* ================================================= */
+        /* 6. Gaya Toast Notification (Kanan Bawah) */
+        /* ================================================= */
+        #toast-container {
+            position: fixed;
+            bottom: 30px; /* 🚨 Kembali ke bawah */
+            right: 30px; /* 🚨 Kembali ke kanan */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column-reverse; /* Toast terbaru di bawah */
+            align-items: flex-end; /* Rata kanan */
+            pointer-events: none; 
+        }
+
+        .toast-message {
+            background-color: var(--color-sidebar-bg); 
+            color: var(--color-dark-text);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-top: 10px; /* Margin di bagian atas */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            max-width: 300px;
+            opacity: 0;
+            transform: translateY(100%); /* Transisi muncul dari bawah */
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            border-left: 5px solid var(--color-primary-neon);
+            font-weight: 600;
+            font-size: 0.9em;
+            pointer-events: auto; 
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
         
+        /* 🚨 Hapus styling untuk strong karena teks "Notifikasi:" dihilangkan */
+        /* .toast-message strong {
+            color: var(--color-primary-neon);
+            margin-right: 5px;
+        } */
+
+        /* Gaya untuk layar kecil */
+        @media (max-width: 600px) {
+            #toast-container {
+                right: 50%;
+                transform: translateX(50%);
+                align-items: center;
+                width: 90%;
+                bottom: 15px;
+            }
+            .toast-message {
+                max-width: 90%;
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -255,7 +314,13 @@
 
     </main>
 
+    <div id="toast-container">
+        </div>
+
     <script>
+        // =================================================
+        // Logika Jam Flip
+        // =================================================
         function animateFlip(element, newValue) {
             const oldValue = element.textContent;
             if (oldValue !== newValue) {
@@ -303,6 +368,62 @@
 
         updateClock();
         setInterval(updateClock, 1000);
+
+        // =================================================
+        // Logika Firebase dan Toast Notification
+        // =================================================
+        
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6gaVW3ye680YylqzSebZugmQepYRA4g4",
+            authDomain: "pengunjung-4489b.firebaseapp.com",
+            databaseURL: "https://pengunjung-4489b-default-rtdb.firebaseio.com",
+            projectId: "pengunjung-4489b",
+            storageBucket: "pengunjung-4489b.firebasestorage.app",
+            messagingSenderId: "233634425303",
+            appId: "1:233634425303:web:9d45d775e703b94843c392"
+        };
+
+        // Inisialisasi Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const database = firebase.database();
+        const notificationRef = database.ref('notifications'); // Mengacu pada node 'notifications'
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            
+            // 🚨 Hanya masukkan pesan murni tanpa teks "Notifikasi:"
+            toast.textContent = message; 
+            
+            // Masukkan di paling atas container (agar terlihat di paling bawah tumpukan, karena flex-direction: column-reverse)
+            container.prepend(toast); 
+
+            // Tampilkan toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10); 
+
+            // Hilangkan setelah 5 detik
+            setTimeout(() => {
+                toast.classList.remove('show');
+                // Hapus elemen setelah transisi selesai
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 5000);
+        }
+
+        // Mendengarkan data baru di Firebase
+        notificationRef.on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.message) {
+                // Tampilkan pesan sebagai notifikasi toast
+                showToast(data.message);
+            }
+        });
     </script>
 
 </body>
