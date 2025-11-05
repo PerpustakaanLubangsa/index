@@ -87,8 +87,7 @@
                     resetIndeks(); 
                     
                     tampilkanKataAcak(0); 
-                    // Interval 10 detik (10000ms)
-                    intervalId = setInterval(tampilkanKataAcak, 10000); 
+                    intervalId = setInterval(tampilkanKataAcak, 30000); 
                 } else {
                     kataTampil.textContent = "Tidak ada kata yang ditemukan.";
                 }
@@ -97,7 +96,7 @@
             }
         }
 
-        function tampilkanKataAcak(delay = 500) {
+        function tampilkanKataAcak(delay = 0) {
             if (daftarKalimat.length === 0) return;
             
             // 1. Cek apakah semua indeks sudah habis
