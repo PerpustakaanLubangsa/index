@@ -176,14 +176,21 @@
             background-color: rgba(255, 255, 255, 0.08); 
         }
 
+        /* Modifikasi: Ikon Catatan tidak akan pernah mendapat class .active dari JS untuk menghindari konflik visual */
         .nav-icon.active { 
             color: var(--color-accent-cyan); 
             background-color: rgba(0, 188, 212, 0.15); 
-            box-shadow: inset 5px 0 0 0 var(--color-accent-cyan); /* GARIS AKTIF (Box Shadow ini dipertahankan) */
+            box-shadow: inset 5px 0 0 0 var(--color-accent-cyan); 
+        }
+
+        /* Tambahan style visual untuk ikon Catatan yang sedang aktif memunculkan iframe */
+        .nav-icon.note-open {
+            color: white; 
+            background-color: var(--color-accent-cyan);
         }
         
         /* ------------------------------------------------ */
-        /* KONTEN UTAMA & IFRAME (Perbaikan Stabilitas) */
+        /* KONTEN UTAMA & IFRAME */
         /* ------------------------------------------------ */
 
         #main-container { 
@@ -208,6 +215,7 @@
              margin-left: calc(var(--sidebar-width) - var(--sidebar-width-expanded)); 
         }
 
+        /* DEFAULT STYLE UNTUK IFRAME LAYAR PENUH (mayoritas) */
         .content-frame { 
             position: absolute; top: 20px; left: 20px; 
             width: calc(100% - 40px); height: calc(100% - 40px); 
@@ -216,17 +224,73 @@
             border-radius: 12px; 
             z-index: 10; pointer-events: none; 
             opacity: 0; 
-            transition: opacity 0.2s ease-out; 
+            transition: opacity 0.2s ease-out, transform 0.3s ease-out; 
+            transform: scale(0.98); 
         }
         
         .content-frame.active { 
             display: block; pointer-events: auto; 
             opacity: 1; 
-            transition: opacity 0.2s 0.05s ease-in; 
+            transform: scale(1);
+            transition: opacity 0.2s 0.05s ease-in, transform 0.3s ease-in; 
+        }
+
+        /* STYLE IFRAME MENGAMBANG/KLIP (Untuk Catatan) */
+        .clipped-frame {
+            width: 400px; 
+            height: 600px; 
+            right: 20px; 
+            top: 20px; 
+            left: unset; 
+            z-index: 50; 
+            transform: translateX(100%) scale(0.8);
+            transition: opacity 0.3s ease-out, transform 0.3s var(--snappy-ease);
+            border: 2px solid black; 
+            /* Tambahkan ini agar tombol close bisa diatur posisinya di dalam container ini */
+            position: absolute; 
+        }
+        
+        .clipped-frame.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        /* STYLE TOMBOL TUTUP BARU */
+        .close-button {
+            position: absolute;
+            top: 0px; /* Atur posisi ke tepi atas border iframe */
+            right: 0px; /* Atur posisi ke tepi kanan border iframe */
+            width: 30px;
+            height: 30px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 0 10px 0 0; /* Bulatkan hanya sudut kanan atas */
+            cursor: pointer;
+            z-index: 60; /* Harus lebih tinggi dari iframe */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0;
+            transition: background-color 0.2s ease-out;
+        }
+
+        .close-button:hover {
+            background-color: darkred;
+        }
+
+        .clipped-frame > iframe {
+            /* Pastikan iframe mengisi penuh container yang sudah ada tombolnya */
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 12px; /* Pastikan sudutnya tetap bundar */
         }
 
         /* ------------------------------------------------ */
-        /* TOAST NOTIFICATION (CSS LAMA) */
+        /* TOAST NOTIFICATION */
         /* ------------------------------------------------ */
         #toast-notification {
             position: fixed; 
@@ -279,7 +343,7 @@
             <div class="nav-icon" data-target="iframe-pengunjung" title="Beranda Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Beranda Pengunjung</span></div>
             <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan"><i class="fas fa-atlas"></i> <span class="nav-label">Pedoman Penggunaan</span></div>
             
-            <div class="nav-icon" data-target="iframe-catatan" title="Catatan Pustakawan"><i class="fas fa-book-open"></i><span class="nav-label">Catatan Pustakawan</span></div>
+            <div class="nav-icon" data-target="iframe-catatan-toggle" title="Catatan Pustakawan"><i class="fas fa-book-open"></i><span class="nav-label">Catatan Pustakawan</span></div>
             
             <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi"><i class="fas fa-calendar-alt"></i><span class="nav-label">Jadwal Absensi</span></div>
         </div>
@@ -296,7 +360,10 @@
             <iframe id="iframe-pengunjung" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/beranda" src="" title="Beranda Pengunjung"></iframe>
             <iframe id="iframe-pedoman" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pedoman" src="" title="Pedoman Penggunaan"></iframe>
 
-            <iframe id="iframe-catatan" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/catatan/" src="" title="Catatan Pustakawan"></iframe>
+            <div id="iframe-catatan-container" class="content-frame clipped-frame">
+                <button class="close-button" id="close-catatan-button"><i class="fas fa-times"></i></button>
+                <iframe id="iframe-catatan" data-src="https://perpustakaanlubangsa.github.io/catatan/" src="" title="Catatan Pustakawan"></iframe>
+            </div>
             
 
         </div>
@@ -309,6 +376,22 @@
             const navIcons = document.querySelectorAll('.nav-icon');
             const contentFrames = document.querySelectorAll('.content-frame');
             const toast = document.getElementById('toast-notification'); 
+            
+            // Perubahan: Menargetkan CONTAINER, bukan IFRAME-nya langsung
+            const iframeCatatanContainer = document.getElementById('iframe-catatan-container'); 
+            const iframeCatatan = document.getElementById('iframe-catatan');
+            const closeCatatanButton = document.getElementById('close-catatan-button');
+            const navIconCatatan = document.querySelector('[data-target="iframe-catatan-toggle"]');
+
+
+            // --- FUNGSI TUTUP CATATAN BARU ---
+            function closeCatatan() {
+                iframeCatatanContainer.classList.remove('active');
+                navIconCatatan.classList.remove('note-open');
+            }
+
+            // Tambahkan event listener untuk tombol tutup
+            closeCatatanButton.addEventListener('click', closeCatatan);
 
             // --- FUNGSI TOAST ---
             function showToast() {
@@ -335,21 +418,56 @@
             });
 
 
-            // 2. LOGIKA KLIK NAVIGASI (Auto-Close & Lazy Load)
+            // 2. LOGIKA KLIK NAVIGASI (Toggle Catatan & Pindah Halaman)
             navIcons.forEach(icon => {
                 icon.addEventListener('click', function() {
-                    const targetId = this.getAttribute('data-target');
+                    const targetData = this.getAttribute('data-target');
                     
-                    // A. Kelola Kelas Aktif Navigasi
+                    // --- KASUS KHUSUS: CATATAN (TOGGLE) ---
+                    if (targetData === 'iframe-catatan-toggle') {
+                        // Lazy Load Catatan jika belum dimuat
+                        const dataSrc = iframeCatatan.getAttribute('data-src');
+                        if (dataSrc && iframeCatatan.getAttribute('src') === '') {
+                            iframeCatatan.setAttribute('src', dataSrc);
+                        }
+                        
+                        // Toggle Container Catatan
+                        iframeCatatanContainer.classList.toggle('active');
+
+                        // Toggle Style Ikon Catatan
+                        this.classList.toggle('note-open');
+
+                        // Tutup Sidebar setelah klik (Opsional, tapi konsisten)
+                        setTimeout(() => {
+                            sidebar.classList.remove('expanded');
+                        }, 100); 
+
+                        // Hentikan eksekusi, agar tidak memicu perpindahan halaman
+                        return; 
+                    }
+                    
+                    // --- KASUS STANDAR: PERPINDAHAN HALAMAN ---
+
+                    // A. Kelola Kelas Aktif Navigasi (Hanya untuk Navigasi Penuh)
                     navIcons.forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
+                    
+                    // Pastikan ikon catatan tidak memiliki kelas 'note-open' jika kita beralih ke halaman lain
+                    navIconCatatan.classList.remove('note-open');
 
-                    // B. Kelola Transisi Iframe (Menghilang)
+
+                    // B. Kelola Transisi Iframe (Menghilang semua, termasuk Catatan)
                     contentFrames.forEach(frame => {
-                        frame.classList.remove('active');
+                        // Iframe layar penuh dinonaktifkan
+                        if (frame.id !== 'iframe-catatan-container') {
+                             frame.classList.remove('active');
+                        }
                     });
+                    
+                    // Pastikan container catatan disembunyikan jika kita pindah ke halaman lain
+                    iframeCatatanContainer.classList.remove('active'); 
 
-                    const targetFrame = document.getElementById(targetId);
+                    const targetFrame = document.getElementById(targetData); 
                     if (targetFrame) {
                         const dataSrc = targetFrame.getAttribute('data-src');
                         
@@ -358,7 +476,7 @@
                             targetFrame.setAttribute('src', dataSrc);
                         }
                         
-                        // C. Memicu Transisi Muncul Iframe
+                        // C. Memicu Transisi Muncul Iframe Penuh
                         setTimeout(() => {
                            targetFrame.classList.add('active');
                         }, 20); 
@@ -372,6 +490,10 @@
                 });
             });
             
+            // Inisialisasi: Pastikan container Catatan disembunyikan saat startup
+            iframeCatatanContainer.classList.remove('active');
+            
+            // Inisialisasi: Aktifkan iframe Absensi secara default
             const defaultActiveIcon = document.querySelector('.nav-icon.active');
             if (!defaultActiveIcon) {
                 navIcons[0]?.classList.add('active');
