@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Page - Floating Iframe on Right Edge Hover</title>
+    <title>Work Page - Animated Sidebar (Full Height Nav)</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -19,8 +19,6 @@
             --sidebar-width-expanded: 280px; 
             --transition-duration: 0.3s; 
             --snappy-ease: cubic-bezier(0.17, 0.82, 0.44, 0.98); 
-            --floating-width: 380px; 
-            --floating-height: 500px; 
         }
 
         body {
@@ -31,11 +29,10 @@
             overflow: hidden; 
             background-color: var(--color-bg-light); 
             font-size: 14px;
-            position: relative; 
         }
         
         /* ------------------------------------------------ */
-        /* KEYFRAMES UNTUK ANIMASI PULSE BRIGHT RUN */
+        /* KEYFRAMES UNTUK ANIMASI PULSE BRIGHT RUN (TANPA BOX-SHADOW) */
         /* ------------------------------------------------ */
         @keyframes pulse-bright {
             0% {
@@ -43,6 +40,7 @@
                 color: var(--color-icon-default);
             }
             1% {
+                /* Cahaya hanya dari scale dan warna putih */
                 transform: scale(1.30); 
                 color: white; 
             }
@@ -56,7 +54,7 @@
         }
 
         /* ------------------------------------------------ */
-        /* SIDEBAR KIRI (Tidak Berubah) */
+        /* SIDEBAR - Struktur Utama dan Transisi */
         /* ------------------------------------------------ */
         #sidebar-left {
             width: var(--sidebar-width); 
@@ -75,151 +73,202 @@
             min-width: var(--sidebar-width-expanded);
         }
 
+        /* ------------------------------------------------ */
+        /* PROFILE HEADER - Dihapus/Disembunyikan */
+        /* ------------------------------------------------ */
+        #profile-header {
+            display: none; 
+            min-height: 0;
+            padding: 0;
+            margin: 0;
+            border-bottom: none;
+        }
+
+        /* ------------------------------------------------ */
+        /* NAVIGASI - Item Menu (Perubahan Utama di Sini) */
+        /* ------------------------------------------------ */
         .nav-list-wrapper { 
-            display: flex; flex-direction: column; flex-grow: 1; 
-            justify-content: space-between; padding: 10px; 
-            height: 100%; box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            flex-grow: 1; 
+            /* Perubahan: Distribusikan item secara merata */
+            justify-content: space-between; 
+            padding: 10px; /* Padding seragam di sekitar list */
+            height: 100%; /* Memastikan wrapper mengambil tinggi penuh */
+            box-sizing: border-box; /* Memastikan padding tidak melebihi tinggi 100% */
         }
         
-        /* [ ... CSS Navigasi Kiri, Pulse-Bright, Nav-Icon, Nav-Label, Hover/Active tetap sama ... ] */
         .nav-icon {
-            position: relative; padding: 12px 0; cursor: pointer; font-size: 18px; 
-            margin: 0; color: cyan; box-sizing: border-box; display: flex; align-items: center; 
-            border-radius: 6px; transition: all 0.2s ease-out; flex-shrink: 0; 
+            position: relative; 
+            padding: 12px 0; 
+            cursor: pointer; font-size: 18px; 
+            /* Perubahan: Hapus margin vertikal agar Flexbox dapat mendistribusikan */
+            margin: 0; 
+            color: cyan; box-sizing: border-box; 
+            display: flex; align-items: center; 
+            border-radius: 6px; 
+            transition: all 0.2s ease-out;
+            /* Perubahan: Memastikan item mengambil ruang minimal yang diperlukan */
+            flex-shrink: 0; 
         }
+
         .nav-icon i { 
-            display: flex; justify-content: center; align-items: center; min-width: var(--sidebar-width); height: 18px; 
-            position: relative; z-index: 2; transform: scale(1); transition: transform 0.2s ease-out, color 0.2s ease-out;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-width: var(--sidebar-width); 
+            height: 18px; 
+            position: relative; z-index: 2;
+            transform: scale(1); 
+            transition: transform 0.2s ease-out, color 0.2s ease-out;
         }
-        #sidebar-left:not(.expanded) .nav-icon i { animation: pulse-bright 3s infinite linear; } 
+        
+        /* ------------------------------------------------ */
+        /* ANIMASI MEMANGGIL PENGGUNA (Pulse Bright Run Logic) */
+        /* ------------------------------------------------ */
+        
+        /* Default animasi yang selalu berjalan saat sidebar ciut */
+        #sidebar-left:not(.expanded) .nav-icon i {
+            animation: pulse-bright 3s infinite linear; 
+        }
+
+        /* Berikan jeda berantai pada setiap ikon (dari atas ke bawah) */
+        /* Disesuaikan untuk 7 item */
         #sidebar-left:not(.expanded) .nav-icon:nth-child(1) i { animation-delay: 0.0s; } 
         #sidebar-left:not(.expanded) .nav-icon:nth-child(2) i { animation-delay: 0.2s; } 
         #sidebar-left:not(.expanded) .nav-icon:nth-child(3) i { animation-delay: 0.4s; } 
         #sidebar-left:not(.expanded) .nav-icon:nth-child(4) i { animation-delay: 0.6s; } 
         #sidebar-left:not(.expanded) .nav-icon:nth-child(5) i { animation-delay: 0.8s; } 
         #sidebar-left:not(.expanded) .nav-icon:nth-child(6) i { animation-delay: 1.0s; } 
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(7) i { animation-delay: 1.2s; } 
+
+        /* PENTING: Matikan animasi ini saat Expanded atau Hovered */
         #sidebar-left.expanded .nav-icon i,
-        #sidebar-left:not(.expanded) .nav-icon:hover i { animation: none !important; transform: scale(1); }
         #sidebar-left:not(.expanded) .nav-icon:hover i {
-            transform: scale(1.1); transition: transform 0.2s var(--snappy-ease); color: var(--color-accent-cyan);
+            animation: none !important;
+            transform: scale(1); /* Reset skala */
         }
+
+        /* Aktifkan kembali efek pop halus saat hover (saat ciut) */
+        #sidebar-left:not(.expanded) .nav-icon:hover i {
+            transform: scale(1.1); 
+            transition: transform 0.2s var(--snappy-ease); 
+            color: var(--color-accent-cyan);
+        }
+        
+        /* LABEL TEXT (lanjutan) */
         .nav-label {
-            white-space: nowrap; overflow: hidden; max-width: 0; margin-left: -15px; 
+            white-space: nowrap; overflow: hidden; max-width: 0; 
+            margin-left: -15px; 
             opacity: 0; font-size: 14px; font-weight: 500;
             transition: max-width 0.3s ease-out, opacity 0.1s ease-out 0.05s, margin-left 0.3s ease-out;
         }
+
         #sidebar-left.expanded .nav-label {
             max-width: calc(var(--sidebar-width-expanded) - var(--sidebar-width) - 20px); 
-            opacity: 1; margin-left: 10px; 
-        }
-        .nav-icon:hover { color: white; background-color: rgba(255, 255, 255, 0.08); }
-        .nav-icon.active { color: var(--color-accent-cyan); background-color: rgba(0, 188, 212, 0.15); box-shadow: inset 5px 0 0 0 var(--color-accent-cyan); }
-
-        /* ------------------------------------------------ */
-        /* Iframe Mengambang (Floating Iframe) - MODIFIKASI HOVER */
-        /* ------------------------------------------------ */
-        
-        /* Hapus Tombol Pemicu sebelumnya */
-        #floating-trigger {
-            display: none; 
+            opacity: 1; 
+            margin-left: 10px; 
         }
 
-        /* Container Iframe - Posisi dan Tampilan */
-        #floating-iframe-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: var(--floating-width);
-            height: var(--floating-height);
-            background-color: var(--color-card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            z-index: 250; 
-            /* Transisi untuk muncul/hilang */
-            opacity: 0;
-            transform: scale(0.8) translateX(20px); /* Tambahkan sedikit dorongan awal */
-            pointer-events: none; 
-            transition: opacity 0.3s ease-out, transform 0.3s var(--snappy-ease);
+        /* EFEK HOVER & AKTIF */
+        .nav-icon:hover { 
+            color: white; 
+            background-color: rgba(255, 255, 255, 0.08); 
         }
 
-        #floating-iframe-container.show {
-            opacity: 1;
-            transform: scale(1) translateX(0);
-            pointer-events: auto;
-        }
-
-        /* Iframe di dalamnya */
-        #iframe-catatan {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 12px; 
+        .nav-icon.active { 
+            color: var(--color-accent-cyan); 
+            background-color: rgba(0, 188, 212, 0.15); 
+            box-shadow: inset 5px 0 0 0 var(--color-accent-cyan); /* GARIS AKTIF (Box Shadow ini dipertahankan) */
         }
         
-        /* Tombol Tutup (Close Button) - Dipertahankan untuk menutup manual */
-        #close-float {
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: #555;
-            font-size: 16px;
-            cursor: pointer;
-            z-index: 260; 
-            padding: 5px;
-            transition: color 0.2s;
-        }
+        /* ------------------------------------------------ */
+        /* KONTEN UTAMA & IFRAME (Perbaikan Stabilitas) */
+        /* ------------------------------------------------ */
 
-        #close-float:hover {
-            color: #c00;
-        }
-
-        /* ------------------------------------------------ */
-        /* HOTZONE UNTUK MEMICU HOVER (BARU/DIKEMBALIKAN) */
-        /* ------------------------------------------------ */
-        #right-hotzone {
-            position: fixed;
-            top: 0;
-            right: 0;
-            height: 100vh;
-            width: 10px; /* Lebar area picu */
-            z-index: 265; /* Di atas semuanya, di bawah tombol tutup */
-            cursor: default; /* Ubah kursor agar tidak mengganggu */
-        }
-        /* ------------------------------------------------ */
-        /* KONTEN UTAMA & IFRAME (Tidak Berubah) */
-        /* ------------------------------------------------ */
         #main-container { 
-            flex-grow: 1; height: 100%; overflow: hidden; position: relative; 
-            margin-left: 0; transition: margin-left var(--transition-duration) var(--snappy-ease); 
+            flex-grow: 1; 
+            height: 100%; 
+            overflow: hidden; 
+            position: relative; 
+            margin-left: 0; 
+            transition: margin-left var(--transition-duration) var(--snappy-ease); 
         }
-        
+
         #main-content { 
-            height: 100%; padding: 20px; position: relative; background-color: var(--color-bg-light); 
-            box-sizing: border-box; width: 100%; 
+            height: 100%; 
+            padding: 20px; 
+            position: relative; 
+            background-color: var(--color-bg-light); 
+            box-sizing: border-box; 
+            width: 100%; 
         }
         
         #sidebar-left.expanded ~ #main-container {
              margin-left: calc(var(--sidebar-width) - var(--sidebar-width-expanded)); 
         }
-        
+
         .content-frame { 
             position: absolute; top: 20px; left: 20px; 
             width: calc(100% - 40px); height: calc(100% - 40px); 
             border: none; background-color: var(--color-card-bg); 
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); 
-            border-radius: 12px; z-index: 10; pointer-events: none; 
-            opacity: 0; transition: opacity 0.2s ease-out; 
+            border-radius: 12px; 
+            z-index: 10; pointer-events: none; 
+            opacity: 0; 
+            transition: opacity 0.2s ease-out; 
         }
         
         .content-frame.active { 
             display: block; pointer-events: auto; 
-            opacity: 1; transition: opacity 0.2s 0.05s ease-in; 
+            opacity: 1; 
+            transition: opacity 0.2s 0.05s ease-in; 
+        }
+
+        /* ------------------------------------------------ */
+        /* TOAST NOTIFICATION (CSS LAMA) */
+        /* ------------------------------------------------ */
+        #toast-notification {
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background-color: var(--color-accent-cyan); 
+            color: white; 
+            padding: 15px 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+            z-index: 1000; 
+            opacity: 0; 
+            transform: translateX(100%); 
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+
+        #toast-notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        #toast-notification .toast-icon {
+            width: 24px; 
+            height: 24px;
+            fill: white; 
+            flex-shrink: 0; 
         }
     </style>
 </head>
 <body>
+
+    <div id="toast-notification">
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+<path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.7c0 36.8-12.4 72.5-35.4 100.7l-9.9 12.2c-7.4 9.2-8.3 22.2-2.1 32.5S19.7 384 32 384H416c12.3 0 22.4-10.7 2.1-32.5l-9.9-12.2C396.4 299.2 384 263.5 384 226.7V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm0 96c61.9 0 112 50.1 112 112v22.7c0 23.4 7.7 45.7 22.6 64H192c0-35.3-28.7-64-64-64H64c0-35.3-28.7-64-64-64V208c0-61.9 50.1-112 112-112H224zM50.7 416h346.6c-2.4 26.6-14.9 48-28.7 60.1-8.5 7.1-19.1 11.9-31.5 14.6s-24.6 2.5-36.9 0l-57.5-12.7c-4.9-1.1-9.9-1.7-14.9-1.7s-10 0-14.9 1.7l-57.5 12.7c-12.3 2.5-24.6 2.6-36.9 0s-23-4.7-31.5-14.6c-13.8-12.1-26.3-33.5-28.7-60.1zM112 416V176h32v240h-32z"/></svg>
+        <span>Selamat Datang<br>Pustakawan Lubangsa</span>
+    </div>
 
     <div id="sidebar-left">
         
@@ -229,6 +278,9 @@
             <div class="nav-icon" data-target="iframe-library" title="Pencarian Library"><i class="fas fa-search"></i><span class="nav-label">Pencarian Library</span></div>
             <div class="nav-icon" data-target="iframe-pengunjung" title="Beranda Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Beranda Pengunjung</span></div>
             <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan"><i class="fas fa-atlas"></i> <span class="nav-label">Pedoman Penggunaan</span></div>
+            
+            <div class="nav-icon" data-target="iframe-catatan" title="Catatan Pustakawan"><i class="fas fa-book-open"></i><span class="nav-label">Catatan Pustakawan</span></div>
+            
             <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi"><i class="fas fa-calendar-alt"></i><span class="nav-label">Jadwal Absensi</span></div>
         </div>
         
@@ -244,17 +296,11 @@
             <iframe id="iframe-pengunjung" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/beranda" src="" title="Beranda Pengunjung"></iframe>
             <iframe id="iframe-pedoman" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pedoman" src="" title="Pedoman Penggunaan"></iframe>
 
+            <iframe id="iframe-catatan" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/catatan/" src="" title="Catatan Pustakawan"></iframe>
+            
+
         </div>
     </div>
-    
-    <button id="floating-trigger" title="Buka Catatan Penting"></button>
-
-    <div id="floating-iframe-container">
-        <button id="close-float" title="Tutup"><i class="fas fa-times"></i></button>
-        <iframe id="iframe-catatan" data-src="https://perpustakaanlubangsa.github.io/catatan/" src="" title="Catatan Penting"></iframe>
-    </div>
-
-    <div id="right-hotzone"></div>
 
 
     <script>
@@ -262,16 +308,24 @@
             const sidebar = document.getElementById('sidebar-left');
             const navIcons = document.querySelectorAll('.nav-icon');
             const contentFrames = document.querySelectorAll('.content-frame');
-            
-            // Variabel Floating Iframe
-            const floatingContainer = document.getElementById('floating-iframe-container');
-            const closeFloat = document.getElementById('close-float');
-            const iframeCatatan = document.getElementById('iframe-catatan');
-            
-            // Variabel Hotzone Kanan (BARU)
-            const rightHotzone = document.getElementById('right-hotzone');
+            const toast = document.getElementById('toast-notification'); 
 
-            // 1. LOGIKA UNTUK MEMBUKA DAN MENUTUP SIDEBAR KIRI (Hover)
+            // --- FUNGSI TOAST ---
+            function showToast() {
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 100); 
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 4000);
+            }
+
+            showToast();
+            // --------------------
+
+
+            // 1. LOGIKA UNTUK MEMBUKA DAN MENUTUP SIDEBAR (Hover)
             sidebar.addEventListener('mouseenter', function() {
                 sidebar.classList.add('expanded');
             });
@@ -280,62 +334,17 @@
                 sidebar.classList.remove('expanded');
             });
 
-            // 2. LOGIKA FLOATING IFRAME DENGAN RIGHT EDGE HOVER (MODIFIKASI)
-            
-            function openFloatingIframe() {
-                // Pastikan sidebar kiri tertutup saat sidebar kanan dibuka (jika diperlukan)
-                sidebar.classList.remove('expanded'); 
-                
-                floatingContainer.classList.add('show');
-                
-                // Lazy Load: Muat URL Catatan hanya saat dibuka pertama kali
-                const dataSrc = iframeCatatan.getAttribute('data-src');
-                if (dataSrc && iframeCatatan.getAttribute('src') === '') {
-                    iframeCatatan.setAttribute('src', dataSrc);
-                }
-            }
-            
-            function closeFloatingIframe() {
-                floatingContainer.classList.remove('show');
-            }
-            
-            // Pemicu Buka: Kursor masuk ke hotzone
-            rightHotzone.addEventListener('mouseenter', openFloatingIframe);
 
-            // Pemicu Tutup: Kursor keluar dari hotzone DAN keluar dari Floating Container
-            document.body.addEventListener('mousemove', function(e) {
-                // Tentukan batas X yang memicu penutupan
-                const closeThresholdX = window.innerWidth - (floatingContainer.offsetWidth + 20); // Lebar container + jarak dari tepi
-                
-                // Cek apakah kursor jauh dari tepi kanan dan Iframe sedang terbuka
-                if (e.clientX < closeThresholdX && floatingContainer.classList.contains('show')) {
-                    // Berikan sedikit penundaan (debounce) agar tidak langsung menutup
-                    // Dalam implementasi sederhana, kita bisa mengandalkan logic body mouseleave atau check posisi
-                    
-                    // Metode yang lebih stabil: Gunakan mouseleave pada container/hotzone
-                    // Jika mouseleave body terjadi di luar floatingContainer, tutup
-                    if (e.target !== rightHotzone && !floatingContainer.contains(e.target) && e.target !== sidebar && !sidebar.contains(e.target)) {
-                        closeFloatingIframe();
-                    }
-                }
-            });
-            
-            // Pemicu Tutup Tambahan: Jika mouse keluar dari area Floating Iframe
-            floatingContainer.addEventListener('mouseleave', closeFloatingIframe);
-            
-            // Pemicu Tutup Manual
-            closeFloat.addEventListener('click', closeFloatingIframe);
-
-
-            // 3. LOGIKA KLIK NAVIGASI KIRI 
+            // 2. LOGIKA KLIK NAVIGASI (Auto-Close & Lazy Load)
             navIcons.forEach(icon => {
                 icon.addEventListener('click', function() {
                     const targetId = this.getAttribute('data-target');
                     
-                    // [ ... Logika Iframe Aktif dan Lazy Load tetap sama ... ]
+                    // A. Kelola Kelas Aktif Navigasi
                     navIcons.forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
 
+                    // B. Kelola Transisi Iframe (Menghilang)
                     contentFrames.forEach(frame => {
                         frame.classList.remove('active');
                     });
@@ -344,22 +353,21 @@
                     if (targetFrame) {
                         const dataSrc = targetFrame.getAttribute('data-src');
                         
+                        // Lazy Load: Muat URL hanya jika belum dimuat
                         if (dataSrc && targetFrame.getAttribute('src') === '') {
                             targetFrame.setAttribute('src', dataSrc);
                         }
                         
+                        // C. Memicu Transisi Muncul Iframe
                         setTimeout(() => {
                            targetFrame.classList.add('active');
                         }, 20); 
                     }
                     
-                    // LANGSUNG TUTUP SIDEBAR KIRI
+                    // D. LANGSUNG TUTUP SIDEBAR SETELAH KLIK
                     setTimeout(() => {
                         sidebar.classList.remove('expanded');
                     }, 100); 
-                    
-                    // Tutup Floating Iframe saat ganti konten
-                    closeFloatingIframe();
 
                 });
             });
