@@ -133,14 +133,16 @@
         }
 
         /* Berikan jeda berantai pada setiap ikon (dari atas ke bawah) */
-        /* Disesuaikan untuk 7 item */
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(1) i { animation-delay: 0.0s; } 
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(2) i { animation-delay: 0.2s; } 
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(3) i { animation-delay: 0.4s; } 
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(4) i { animation-delay: 0.6s; } 
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(5) i { animation-delay: 0.8s; } 
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(6) i { animation-delay: 1.0s; } 
-        #sidebar-left:not(.expanded) .nav-icon:nth-child(7) i { animation-delay: 1.2s; } 
+        /* Disesuaikan untuk 8 item baru */
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(1) i { animation-delay: 0.0s; } /* Status */
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(2) i { animation-delay: 0.2s; } /* Absensi */
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(3) i { animation-delay: 0.4s; } /* Pinjam */
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(4) i { animation-delay: 0.6s; } /* Library */
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(5) i { animation-delay: 0.8s; } /* Pengunjung */
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(6) i { animation-delay: 1.0s; } /* Pedoman */
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(7) i { animation-delay: 1.2s; } /* Catatan */ 
+        #sidebar-left:not(.expanded) .nav-icon:nth-child(8) i { animation-delay: 1.4s; } /* Jadwal */ 
+
 
         /* PENTING: Matikan animasi ini saat Expanded atau Hovered */
         #sidebar-left.expanded .nav-icon i,
@@ -189,6 +191,18 @@
             background-color: var(--color-accent-cyan);
         }
         
+        /* STYLE KHUSUS: Ikon Status (Untuk Notifikasi/Penting) */
+        .nav-icon.status-open {
+            color: white; 
+            background-color: darkorange; /* Warna mencolok untuk status */
+        }
+        
+        /* Tambahkan warna animasi pulse-bright untuk ikon status */
+        #sidebar-left:not(.expanded) .nav-icon.status-toggle i {
+            color: darkorange; /* Atur warna default pulse-bright untuk status */
+        }
+
+
         /* ------------------------------------------------ */
         /* KONTEN UTAMA & IFRAME */
         /* ------------------------------------------------ */
@@ -224,8 +238,8 @@
             border-radius: 12px; 
             z-index: 10; pointer-events: none; 
             opacity: 0; 
-            transition: opacity 0.2s ease-out, transform 0.3s ease-out; 
             transform: scale(0.98); 
+            transition: opacity 0.2s ease-out, transform 0.3s ease-out; 
         }
         
         .content-frame.active { 
@@ -235,10 +249,11 @@
             transition: opacity 0.2s 0.05s ease-in, transform 0.3s ease-in; 
         }
 
-        /* STYLE IFRAME MENGAMBANG/KLIP (Untuk Catatan) */
+        /* STYLE IFRAME MENGAMBANG/KLIP (Untuk Catatan & Status) */
         .clipped-frame {
             width: 400px; 
-            height: 600px; 
+            /* PERBAIKAN: Tinggi disesuaikan dengan tinggi layar (100vh) dikurangi padding 40px */
+            height: calc(100vh - 40px); 
             right: 20px; 
             top: 20px; 
             left: unset; 
@@ -288,55 +303,14 @@
             display: block;
             border-radius: 12px; /* Pastikan sudutnya tetap bundar */
         }
-
-        /* ------------------------------------------------ */
-        /* TOAST NOTIFICATION */
-        /* ------------------------------------------------ */
-        #toast-notification {
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            background-color: var(--color-accent-cyan); 
-            color: white; 
-            padding: 15px 25px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
-            z-index: 1000; 
-            opacity: 0; 
-            transform: translateX(100%); 
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-            font-size: 16px;
-            font-weight: 600;
-            line-height: 1.4;
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
-
-        #toast-notification.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        #toast-notification .toast-icon {
-            width: 24px; 
-            height: 24px;
-            fill: white; 
-            flex-shrink: 0; 
-        }
     </style>
 </head>
 <body>
-
-    <div id="toast-notification">
-        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-<path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.7c0 36.8-12.4 72.5-35.4 100.7l-9.9 12.2c-7.4 9.2-8.3 22.2-2.1 32.5S19.7 384 32 384H416c12.3 0 22.4-10.7 2.1-32.5l-9.9-12.2C396.4 299.2 384 263.5 384 226.7V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm0 96c61.9 0 112 50.1 112 112v22.7c0 23.4 7.7 45.7 22.6 64H192c0-35.3-28.7-64-64-64H64c0-35.3-28.7-64-64-64V208c0-61.9 50.1-112 112-112H224zM50.7 416h346.6c-2.4 26.6-14.9 48-28.7 60.1-8.5 7.1-19.1 11.9-31.5 14.6s-24.6 2.5-36.9 0l-57.5-12.7c-4.9-1.1-9.9-1.7-14.9-1.7s-10 0-14.9 1.7l-57.5 12.7c-12.3 2.5-24.6 2.6-36.9 0s-23-4.7-31.5-14.6c-13.8-12.1-26.3-33.5-28.7-60.1zM112 416V176h32v240h-32z"/></svg>
-        <span>Selamat Datang<br>Pustakawan Lubangsa</span>
-    </div>
-
+    
     <div id="sidebar-left">
         
         <div class="nav-list-wrapper">
+            <div class="nav-icon status-toggle" data-target="iframe-status-toggle" title="Status Perpustakaan"><i class="fas fa-bell"></i><span class="nav-label">Status Perpustakaan</span></div>
             <div class="nav-icon active" data-target="iframe-absensi" title="Halaman Absensi"><i class="fas fa-clipboard-check"></i><span class="nav-label">Halaman Absensi</span></div>
             <div class="nav-icon" data-target="iframe-pinjam" title="Sistem Peminjaman"><i class="fas fa-book"></i><span class="nav-label">Sistem Peminjaman</span></div>
             <div class="nav-icon" data-target="iframe-library" title="Pencarian Library"><i class="fas fa-search"></i><span class="nav-label">Pencarian Library</span></div>
@@ -364,6 +338,11 @@
                 <button class="close-button" id="close-catatan-button"><i class="fas fa-times"></i></button>
                 <iframe id="iframe-catatan" data-src="https://perpustakaanlubangsa.github.io/catatan/" src="" title="Catatan Pustakawan"></iframe>
             </div>
+
+            <div id="iframe-status-container" class="content-frame clipped-frame active">
+                <button class="close-button" id="close-status-button"><i class="fas fa-times"></i></button>
+                <iframe id="iframe-status" data-src="https://perpustakaanlubangsa.github.io/status/" src="" title="Status Perpustakaan"></iframe>
+            </div>
             
 
         </div>
@@ -375,38 +354,40 @@
             const sidebar = document.getElementById('sidebar-left');
             const navIcons = document.querySelectorAll('.nav-icon');
             const contentFrames = document.querySelectorAll('.content-frame');
-            const toast = document.getElementById('toast-notification'); 
             
-            // Perubahan: Menargetkan CONTAINER, bukan IFRAME-nya langsung
+            // Elemen Catatan
             const iframeCatatanContainer = document.getElementById('iframe-catatan-container'); 
             const iframeCatatan = document.getElementById('iframe-catatan');
             const closeCatatanButton = document.getElementById('close-catatan-button');
             const navIconCatatan = document.querySelector('[data-target="iframe-catatan-toggle"]');
 
+            // Elemen Status Baru
+            const iframeStatusContainer = document.getElementById('iframe-status-container'); 
+            const iframeStatus = document.getElementById('iframe-status');
+            const closeStatusButton = document.getElementById('close-status-button');
+            const navIconStatus = document.querySelector('[data-target="iframe-status-toggle"]');
 
-            // --- FUNGSI TUTUP CATATAN BARU ---
+
+            // --- FUNGSI TUTUP CATATAN ---
             function closeCatatan() {
                 iframeCatatanContainer.classList.remove('active');
                 navIconCatatan.classList.remove('note-open');
             }
 
-            // Tambahkan event listener untuk tombol tutup
+            // Tambahkan event listener untuk tombol tutup Catatan
             closeCatatanButton.addEventListener('click', closeCatatan);
 
-            // --- FUNGSI TOAST ---
-            function showToast() {
-                setTimeout(() => {
-                    toast.classList.add('show');
-                }, 100); 
-
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 4000);
+            // --- FUNGSI TUTUP STATUS BARU ---
+            function closeStatus() {
+                iframeStatusContainer.classList.remove('active');
+                navIconStatus.classList.remove('status-open');
             }
 
-            showToast();
-            // --------------------
+            // Tambahkan event listener untuk tombol tutup Status
+            closeStatusButton.addEventListener('click', closeStatus);
 
+            // --- FUNGSI TOAST (Dihapus) ---
+            // Tidak ada lagi fungsi showToast()
 
             // 1. LOGIKA UNTUK MEMBUKA DAN MENUTUP SIDEBAR (Hover)
             sidebar.addEventListener('mouseenter', function() {
@@ -418,11 +399,34 @@
             });
 
 
-            // 2. LOGIKA KLIK NAVIGASI (Toggle Catatan & Pindah Halaman)
+            // 2. LOGIKA KLIK NAVIGASI (Toggle Catatan/Status & Pindah Halaman)
             navIcons.forEach(icon => {
                 icon.addEventListener('click', function() {
                     const targetData = this.getAttribute('data-target');
                     
+                    // --- KASUS KHUSUS: STATUS (TOGGLE) ---
+                    if (targetData === 'iframe-status-toggle') {
+                        // Lazy Load Status jika belum dimuat
+                        const dataSrc = iframeStatus.getAttribute('data-src');
+                        if (dataSrc && iframeStatus.getAttribute('src') === '') {
+                            iframeStatus.setAttribute('src', dataSrc);
+                        }
+                        
+                        // Toggle Container Status
+                        iframeStatusContainer.classList.toggle('active');
+
+                        // Toggle Style Ikon Status
+                        this.classList.toggle('status-open');
+
+                        // Tutup Sidebar
+                        setTimeout(() => {
+                            sidebar.classList.remove('expanded');
+                        }, 100); 
+
+                        return; 
+                    }
+
+
                     // --- KASUS KHUSUS: CATATAN (TOGGLE) ---
                     if (targetData === 'iframe-catatan-toggle') {
                         // Lazy Load Catatan jika belum dimuat
@@ -436,6 +440,11 @@
 
                         // Toggle Style Ikon Catatan
                         this.classList.toggle('note-open');
+                        
+                        // Tambahkan: Tutup Status saat Catatan dibuka
+                        iframeStatusContainer.classList.remove('active');
+                        navIconStatus.classList.remove('status-open');
+
 
                         // Tutup Sidebar setelah klik (Opsional, tapi konsisten)
                         setTimeout(() => {
@@ -452,20 +461,22 @@
                     navIcons.forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Pastikan ikon catatan tidak memiliki kelas 'note-open' jika kita beralih ke halaman lain
+                    // Pastikan ikon catatan dan status tidak memiliki kelas 'open' jika kita beralih ke halaman lain
                     navIconCatatan.classList.remove('note-open');
+                    navIconStatus.classList.remove('status-open');
 
 
-                    // B. Kelola Transisi Iframe (Menghilang semua, termasuk Catatan)
+                    // B. Kelola Transisi Iframe (Menghilang semua, termasuk Catatan & Status)
                     contentFrames.forEach(frame => {
                         // Iframe layar penuh dinonaktifkan
-                        if (frame.id !== 'iframe-catatan-container') {
+                        if (frame.id !== 'iframe-catatan-container' && frame.id !== 'iframe-status-container') {
                              frame.classList.remove('active');
                         }
                     });
                     
-                    // Pastikan container catatan disembunyikan jika kita pindah ke halaman lain
+                    // Pastikan container catatan dan status disembunyikan jika kita pindah ke halaman lain
                     iframeCatatanContainer.classList.remove('active'); 
+                    iframeStatusContainer.classList.remove('active'); 
 
                     const targetFrame = document.getElementById(targetData); 
                     if (targetFrame) {
@@ -493,10 +504,27 @@
             // Inisialisasi: Pastikan container Catatan disembunyikan saat startup
             iframeCatatanContainer.classList.remove('active');
             
+            // Inisialisasi: Logika DEFAULT OPEN untuk STATUS
+            // 1. Muat URL Status
+            const dataSrcStatus = iframeStatus.getAttribute('data-src');
+            if (dataSrcStatus && iframeStatus.getAttribute('src') === '') {
+                iframeStatus.setAttribute('src', dataSrcStatus);
+            }
+            // 2. Tandai ikon Status sebagai 'open'
+            navIconStatus.classList.add('status-open');
+            // 3. Container Status sudah memiliki class 'active' di HTML, tidak perlu diaktifkan di sini
+            
             // Inisialisasi: Aktifkan iframe Absensi secara default
-            const defaultActiveIcon = document.querySelector('.nav-icon.active');
-            if (!defaultActiveIcon) {
-                navIcons[0]?.classList.add('active');
+            // Hapus kelas aktif/open lama dari semua ikon
+            navIcons.forEach(i => i.classList.remove('active'));
+            
+            // Aktifkan kembali ikon Absensi dan framenya secara default
+            const defaultActiveIcon = document.querySelector('[data-target="iframe-absensi"]');
+            const defaultActiveFrame = document.getElementById('iframe-absensi');
+            
+            if (defaultActiveIcon && defaultActiveFrame) {
+                defaultActiveIcon.classList.add('active');
+                defaultActiveFrame.classList.add('active');
             }
         });
     </script>
