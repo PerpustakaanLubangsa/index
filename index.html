@@ -3,686 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Page - Animated Sidebar (Full Height Nav)</title>
-    <link rel="icon" type="image/png" href="logo.png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script>
-        // Cek status login di localStorage. Jika tidak ditemukan atau bukan 'true',
-        // pengguna segera dialihkan kembali ke halaman login (index.html).
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = 'index.html'; 
-        }
-    </script>
-    
+    <title>Login Admin | Perpustakaan Lubangsa</title>
     <style>
-        /* Elegan Dark Sidebar Murni (Dengan Hover/Sentuh Bouncy/Kenyal) */
+        /* Menggunakan font Roboto dari Google Fonts (jika terhubung ke internet) */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
         :root {
-            --color-bg-light: #f4f6f8; 
-            --color-card-bg: #ffffff; 
-            --color-sidebar-bg: #1c2635; 
-            --color-accent-cyan: #00bcd4; 
-            --color-icon-default: #95a3b7; 
-            --sidebar-width: 70px; 
-            --sidebar-width-expanded: 280px; 
-            --transition-duration: 0.3s; 
-            --snappy-ease: cubic-bezier(0.17, 0.82, 0.44, 0.98); 
+            /* Warna Akses Teal Baru */
+            --primary-color: #1FB5B5; 
+            --secondary-color: #79d0d0; 
+            /* Warna Dasar */
+            --background-color: #000000; /* Hitam Pekat */
+            --card-color: #ffffff;
+            --text-color: #263238; 
+            --light-text-color: #f5f5f5; 
+            --error-color: #ef5350; 
+            --success-color: #4db6ac;
         }
         
-        /* ------------------------------------------------ */
-        /* Perbaikan Global: BODY sebagai Container Penuh dan Relative */
-        /* ------------------------------------------------ */
+        /* Keyframes untuk Animasi Fade-In & Scale (Form) */
+        @keyframes coolEntrance {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Keyframes untuk Animasi Melayang Masuk dari Kiri */
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         body {
-            margin: 0;
-            padding: 0; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            position: relative; 
-            height: 100vh; 
-            width: 100vw; 
-            overflow: hidden; 
-            background-color: var(--color-bg-light); 
-            font-size: 14px;
-        }
-        
-        /* ------------------------------------------------ */
-        /* SIDEBAR - Struktur Utama dan Transisi */
-        /* ------------------------------------------------ */
-        #sidebar-left {
-            position: fixed; 
-            left: 0;
-            top: 0;
-            width: var(--sidebar-width); 
-            min-width: var(--sidebar-width);
-            /* Diubah menjadi hitam pekat agar kontras dengan warna navigasi */
-            background-color: #000000; 
-            padding: 0; 
+            font-family: 'Roboto', "Helvetica Neue", Arial, sans-serif; 
+            font-weight: 300; 
+            background-color: var(--background-color);
+            color: var(--light-text-color); 
+            
             display: flex;
-            flex-direction: column; 
-            justify-content: flex-start; 
-            z-index: 100; 
-            transition: width var(--transition-duration) var(--snappy-ease), min-width var(--transition-duration) var(--snappy-ease);
-            height: 100%; 
-        }
-
-        #sidebar-left.expanded {
-            width: var(--sidebar-width-expanded);
-            min-width: var(--sidebar-width-expanded);
-        }
-
-        /* ------------------------------------------------ */
-        /* TOMBOL TOGGLE DI DALAM SIDEBAR (Mencolok) */
-        /* ------------------------------------------------ */
-        #toggle-button {
-            /* MENGADAPTASI GAYA .nav-icon DENGAN SENTUHAN MENCERLAK */
-            background-color: var(--color-sidebar-bg);
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 12px 0; 
-            font-size: 18px; 
-            display: flex;
-            align-items: center;
-            justify-content: flex-start; 
-            width: 100%;
-            box-sizing: border-box;
-            transition: all 0.2s ease-out; 
-            flex-shrink: 0; 
-            border-radius: 6px; 
-            overflow: hidden; 
-            
-            margin-top: 10px; 
-            margin-bottom: 10px; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        #toggle-button:hover {
-            background-color: rgba(255, 255, 255, 0.08); 
-            color: var(--color-accent-cyan);
-        }
-        
-        /* Ikon (Font Awesome) */
-        #toggle-icon {
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-width: var(--sidebar-width); 
-            height: 18px; 
-            position: relative; 
-            z-index: 2;
-            color: var(--color-accent-cyan); 
-            transform: rotate(0deg); 
-            transition: transform 0.3s var(--snappy-ease);
-        }
-
-        /* Rotasi untuk Font Awesome saat CIUT */
-        #sidebar-left:not(.expanded) #toggle-icon {
-            transform: rotate(0deg); 
-        }
-
-        /* Label Teks Ciutkan Sidebar (Mengikuti .nav-label) */
-        #toggle-label {
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            max-width: 0;
-            opacity: 0;
-            margin-left: -15px; 
-            
-            transition: max-width 0.3s ease-out, opacity 0.1s ease-out 0.05s, margin-left 0.3s ease-out;
-        }
-
-        /* Tampilkan label saat expanded */
-        #sidebar-left.expanded #toggle-button #toggle-label {
-            max-width: calc(var(--sidebar-width-expanded) - var(--sidebar-width) - 20px);
-            opacity: 1;
-            margin-left: 10px; 
-        }
-
-        /* ------------------------------------------------ */
-        /* NAVIGASI - Item Menu */
-        /* ------------------------------------------------ */
-        .nav-list-wrapper { 
-            display: flex; 
-            flex-direction: column; 
-            flex-grow: 1; /* Agar mengambil sisa ruang di tengah */
-            justify-content: flex-start; 
-            padding: 0 10px 10px 10px; 
-            height: 100%; 
-            box-sizing: border-box; 
-        }
-        
-        /* Wrapper untuk item navigasi utama (fleksibel) */
-        .nav-group-main {
-            flex-grow: 1;
-        }
-        
-        /* Wrapper untuk item logout/bawah (fleksibel) */
-        .nav-group-bottom {
-            margin-top: auto; /* Mendorong ke bawah */
-        }
-
-        .nav-list-wrapper > .nav-icon:first-of-type {
-             margin-top: 0; 
-        }
-
-        .nav-list-wrapper > .nav-icon {
-            margin-bottom: 5px; 
-        }
-        
-        .nav-icon {
-            position: relative; 
-            padding: 12px 0; 
-            cursor: pointer; font-size: 18px; 
-            margin: 0; 
-            color: cyan; box-sizing: border-box; 
-            display: flex; align-items: center; 
-            border-radius: 6px; 
-            transition: all 0.2s ease-out;
-            flex-shrink: 0; 
-        }
-
-        /* Gaya khusus untuk tombol logout */
-        #logout-nav-item {
-            color: #ef5350; /* Merah untuk logout */
-            margin-top: 15px;
-            margin-bottom: 10px;
-        }
-        #logout-nav-item:hover {
-            background-color: rgba(239, 83, 80, 0.15);
-            color: white;
-        }
-        #logout-nav-item i {
-            color: inherit; /* Ikuti warna induk */
-        }
-
-
-        .nav-icon i { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-width: var(--sidebar-width); 
-            height: 18px; 
-            position: relative; z-index: 2;
-            transform: scale(1); 
-            transition: transform 0.2s ease-out, color 0.2s ease-out;
-        }
-        
-        #sidebar-left:not(.expanded) .nav-icon:hover i {
-            transform: scale(1.1); 
-            transition: transform 0.2s var(--snappy-ease); 
-            color: var(--color-accent-cyan);
-        }
-        
-        /* LABEL TEXT */
-        .nav-label {
-            white-space: nowrap; overflow: hidden; max-width: 0; 
-            margin-left: -15px; 
-            opacity: 0; font-size: 14px; font-weight: 500;
-            color: white; /* Default text color */
-            transition: max-width 0.3s ease-out, opacity 0.1s ease-out 0.05s, margin-left 0.3s ease-out;
-        }
-
-        #sidebar-left.expanded .nav-label {
-            max-width: calc(var(--sidebar-width-expanded) - var(--sidebar-width) - 20px); 
-            opacity: 1; 
-            margin-left: 10px; 
-        }
-
-        /* EFEK HOVER & AKTIF */
-        .nav-icon:hover { 
-            color: white; 
-            background-color: rgba(255, 255, 255, 0.08); 
-        }
-
-        .nav-icon.active { 
-            color: var(--color-accent-cyan); 
-            background-color: rgba(0, 188, 212, 0.15); 
-            box-shadow: inset 5px 0 0 0 var(--color-accent-cyan); 
-        }
-        .nav-icon.active .nav-label {
-            color: var(--color-accent-cyan);
-        }
-        
-        /* Gaya khusus pinjam dikembalikan */
-        .nav-icon.pinjam-toggle i {
-            color: gold; 
-        }
-        .nav-icon.pinjam-open {
-            background-color: #ffd700; 
-            color: black;
-        }
-
-
-        /* ------------------------------------------------ */
-        /* KONTEN UTAMA & IFRAME (Tidak ada perubahan di sini) */
-        /* ------------------------------------------------ */
-
-        #main-container { 
-            height: 100%; 
-            width: calc(100% - var(--sidebar-width-expanded)); 
-            position: absolute; 
-            top: 0;
-            left: 0;
-            margin-left: var(--sidebar-width-expanded); 
-            overflow: hidden; 
-            padding: 0; 
-            z-index: 50; 
-            transition: margin-left var(--transition-duration) var(--snappy-ease), width var(--transition-duration) var(--snappy-ease);
-        }
-        
-        #sidebar-left:not(.expanded) ~ #main-container {
-            margin-left: var(--sidebar-width); 
-            width: calc(100% - var(--sidebar-width));
-        }
-
-        #main-content { 
-            height: 100%; 
-            width: 100%; 
-            padding: 0; 
-            position: relative; 
-            background-color: var(--color-bg-light); 
-            box-sizing: border-box; 
-        }
-        
-        #main-content > .content-frame {
-            width: 100%; 
-            height: 100%; 
-            position: absolute; top: 0; left: 0; 
-            border: none; 
-            box-sizing: border-box;
-        }
-        
-        /* DEFAULT STYLE UNTUK IFRAME LAYAR PENUH (mayoritas) */
-        .content-frame { 
-            z-index: 10; pointer-events: none; 
-            opacity: 0; 
-            transform: scale(1); 
-            transition: opacity 0.2s ease-out, transform 0.3s ease-out, filter 0.4s ease-out; 
-        }
-        
-        .content-frame.active { 
-            display: block; pointer-events: auto; 
-            opacity: 1; 
-            transform: scale(1);
-            transition: opacity 0.2s 0.05s ease-in, transform 0.3s ease-in, filter 0.4s ease-in; 
-        }
-        
-        /* STYLE KONTEN BELAKANG (Saat Pinjam Ganda aktif) DIKEMBALIKAN */
-        #main-content.pinjam-ganda-active > .content-frame.active:not(.clipped-frame) {
-            filter: blur(5px) brightness(0.7); 
-            transform: scale(1.05); 
-            pointer-events: none; 
-            opacity: 1; 
-            z-index: 5; 
-        }
-        
-
-        /* KHUSUS: CONTAINER PINJAM GANDA (FLEKSIBEL DENGAN MARGIN 40px KELILING) DIKEMBALIKAN */
-        #iframe-pinjam-ganda-container {
-            position: absolute; 
-            left: 40px; 
-            width: calc(100% - 80px); 
-            top: 40px; 
-            height: calc(100% - 80px); 
-            right: unset; 
-            
-            display: flex; 
-            justify-content: space-between; 
-            gap: 20px; 
-            
-            padding: 0;
-            background: none; 
-            border: none;
-            box-shadow: none;
-            border-radius: 0;
-            overflow: visible; 
-            
-            transform: none; 
-            transition: none; 
-            z-index: 55; 
-            
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #iframe-pinjam-ganda-container::before {
-            content: '';
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            bottom: 0;
-            
-            background-color: rgba(0, 0, 0, 0.4); 
-            z-index: -1; 
-            opacity: 0;
-            transition: opacity 0.4s ease-out;
-            pointer-events: none; 
-        }
-        
-        #iframe-pinjam-ganda-container.active {
-             opacity: 1;
-             pointer-events: auto;
-        }
-
-        #iframe-pinjam-ganda-container.active::before {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-
-        /* Iframe individual di dalam Pinjam Ganda */
-        #iframe-pinjam-daftar {
-            width: 50%; 
-            height: 100%;
-            border: none; 
-            background-color: var(--color-card-bg); 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); 
-            border-radius: 12px; 
-            display: block;
-            
-            transition: transform 0.4s var(--snappy-ease), opacity 0.4s ease-out;
-            opacity: 0;
-            transform: translateX(-100px); 
-        }
-
-        .iframe-pinjam-baru-wrapper {
-            width: 50%; 
-            height: 100%; 
-            position: relative; 
-            border-radius: 12px;
-            background-color: var(--color-card-bg); 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); 
-            display: block;
-            
-            transform: translateX(100px); 
-            opacity: 0;
-            transition: transform 0.4s var(--snappy-ease), opacity 0.4s ease-out;
-        }
-        
-        #iframe-pinjam-baru {
-            width: 100%; 
-            height: 100%;
-            border: none; 
-            border-radius: 12px; 
-            display: block;
-            background: none; 
-        }
-
-        /* POSISI AKHIR ANIMASI */
-        #iframe-pinjam-ganda-container.active #iframe-pinjam-daftar {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        #iframe-pinjam-ganda-container.active .iframe-pinjam-baru-wrapper {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-
-        /* STYLE TOMBOL TUTUP BARU */
-        .close-button {
-            position: absolute;
-            top: 0px; 
-            right: 0px; 
-            width: 30px;
-            height: 30px;
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 0 0 0 0; 
-            cursor: pointer;
-            z-index: 60; 
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 16px;
-            line-height: 1;
-            padding: 0;
-            transition: background-color 0.2s ease-out;
-        }
-        
-        .close-button:hover {
-            background-color: darkred;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; 
         }
 
-        .iframe-pinjam-baru-wrapper .close-button {
-            right: 0px; 
-            top: 0px;
-            border-radius: 0 12px 0 0;
-            z-index: 10;
+        /* Container utama yang membungkus kedua sisi */
+        .main-wrapper {
+            display: flex;
+            width: 98%; 
+            max-width: 1400px; 
+            height: 90vh; 
+            align-items: center;
+            justify-content: space-between;
+            margin: auto; 
+        }
+
+        /* Panel Kiri: Form Login */
+        .left-panel {
+            width: 40%; 
+            display: flex;
+            justify-content: flex-start; 
+            align-items: center;
+            height: 100%;
+            padding: 0 20px; 
+        }
+
+        /* Panel Kanan: Teks Sambutan */
+        .right-panel {
+            width: 60%; 
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 20px; 
+        }
+
+        /* Styling untuk Form Container */
+        .form-container {
+            background-color: var(--card-color);
+            padding: 50px 40px; 
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(31, 181, 181, 0.4); 
+            width: 100%;
+            max-width: 380px; 
+            min-height: 400px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 8px solid var(--primary-color);
+
+            opacity: 0; 
+            animation: coolEntrance 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+            animation-delay: 0.2s; 
+        }
+        
+        /* Styling untuk Teks Sambutan */
+        .welcome-title {
+            color: var(--primary-color);
+            font-size: 3.5em; 
+            margin-bottom: 25px;
+            font-weight: 700; 
+            opacity: 0; 
+            animation: slideInFromLeft 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation-delay: 0.4s; 
+        }
+
+        .welcome-text {
+            font-size: 1.4em; 
+            line-height: 1.6;
+            font-weight: 700; 
+            color: var(--light-text-color);
+            margin-bottom: 20px; 
+            
+            opacity: 0; 
+            animation: slideInFromLeft 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Delay untuk setiap paragraf */
+        .welcome-text:nth-of-type(1) { /* Paragraf pertama */
+            animation-delay: 0.2s; 
+        }
+        .welcome-text:nth-of-type(2) { /* Paragraf kedua */
+            animation-delay: 0.4s; 
+        }
+    
+        /* Styling Form Element */
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 45px;
+            font-size: 2.3em;
+            font-weight: 700; 
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #f7f7f7;
+            color: var(--text-color);
+            font-size: 1em;
+            font-weight: 400; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(31, 181, 181, 0.4); 
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
+        }
+        button:hover {
+            background-color: #179393; 
+            box-shadow: 0 6px 20px rgba(31, 181, 181, 0.5);
+            transform: translateY(-2px); 
+        }
+        #message {
+            margin-top: 25px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--error-color);
+            display: none;
+            font-size: 1em;
         }
     </style>
 </head>
 <body>
+    <div class="main-wrapper">
+        <div class="left-panel">
+            <div class="form-container">
+                <h1>Perpustakaan Lubangsa</h1>
+                
+                <form id="loginForm" autocomplete="off">
+                    <label for="username">USERNAME</label>
+                    <input type="text" id="username" required placeholder="Nama pengguna" autofocus>
+                    
+                    <label for="password">PASSWORD</label>
+                    <input type="password" id="password" required placeholder="Kata sandi" autocomplete="new-password">
+                    
+                    <button type="submit">MASUK</button>
+                </form>
+                <p id="message"></p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h2 class="welcome-title">Selamat Datang</h2>
+            
+            <p class="welcome-text">
+                Portal ini adalah pintu bagi Anda untuk memastikan setiap buku menemukan pembacanya dan kembali dengan selamat. Dalam sentuhan Anda, tertata rapi jejak pinjam-meminjam yang menjaga perpustakaan tetap hidup dan bermanfaat bagi semua.
+            </p>
+            
+            <p class="welcome-text">
+                Masuklah dan rawatlah alur peminjaman dengan senyum. Kehangatan Anda adalah wujud sederhana dari pelayanan yang membuat perpustakaan tetap hidup dalam ingatan para pembacanya.
+            </p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
-    <div id="sidebar-left" class="expanded"> 
-        
-        <div class="nav-list-wrapper">
-            
-            <button id="toggle-button">
-                <i id="toggle-icon" class="fas fa-angle-double-left"></i>
-                <span id="toggle-label">Ciutkan Sidebar</span>
-            </button>
-            
-            <div class="nav-group-main">
-                <div class="nav-icon active" data-target="iframe-absensi" title="Halaman Absensi"><i class="fas fa-clipboard-check"></i><span class="nav-label">Halaman Absensi</span></div>
-                
-                <div class="nav-icon" data-target="iframe-sistem-pinjam" title="Sistem Peminjaman"><i class="fas fa-book-reader"></i><span class="nav-label">Sistem Peminjaman</span></div>
-                
-                <div class="nav-icon" data-target="iframe-library" title="Pencarian Library"><i class="fas fa-search"></i><span class="nav-label">Pencarian Library</span></div>
-                <div class="nav-icon" data-target="iframe-pengunjung" title="Beranda Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Beranda Pengunjung</span></div>
-                <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan"><i class="fas fa-atlas"></i> <span class="nav-label">Pedoman Penggunaan</span></div>
-                
-                <div class="nav-icon" data-target="iframe-catatan-full" title="Catatan Pustakawan"><i class="fas fa-book-open"></i><span class="nav-label">Catatan Pustakawan</span></div>
-                
-                <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi"><i class="fas fa-calendar-alt"></i><span class="nav-label">Jadwal Absensi</span></div>
-            </div>
-            
-            <div class="nav-group-bottom">
-                 <div class="nav-icon" id="logout-nav-item" title="Keluar dari Sistem"><i class="fas fa-sign-out-alt"></i><span class="nav-label">Keluar (Logout)</span></div>
-            </div>
-        </div>
-        
-    </div>
-
-    <div id="main-container">
-        <div id="main-content">
-            
-            <iframe id="iframe-absensi" class="content-frame active" data-src="https://perpustakaanlubangsa.github.io/absensi/" src="https://perpustakaanlubangsa.github.io/absensi/" title="Halaman Absensi"></iframe>
-            <iframe id="iframe-sistem-pinjam" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/sistempinjam/" src="" title="Sistem Peminjaman"></iframe>
-            <iframe id="iframe-jadwal" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/absensi/jadwal" src="" title="Jadwal Absensi"></iframe>
-            <iframe id="iframe-library" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pencarian" src="" title="Pencarian Library"></iframe>
-            <iframe id="iframe-pengunjung" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pengunjung/beranda" src="" title="Beranda Pengunjung"></iframe>
-            <iframe id="iframe-pedoman" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/pedoman" src="" title="Pedoman Penggunaan"></iframe>
-            
-            <iframe id="iframe-catatan-full" class="content-frame" data-src="https://perpustakaanlubangsa.github.io/catatan/" src="" title="Catatan Pustakawan"></iframe>
-
-
-            <div id="iframe-pinjam-ganda-container" class="clipped-frame">
-                
-                <iframe id="iframe-pinjam-daftar" data-src="https://perpustakaanlubangsa.github.io/sistempinjam/daftarpeminjam" src="" title="Daftar Peminjam"></iframe>
-                
-                <div class="iframe-pinjam-baru-wrapper">
-                    <button class="close-button" id="close-pinjam-ganda-button"><i class="fas fa-times"></i></button>
-                    <iframe id="iframe-pinjam-baru" data-src="https://perpustakaanlubangsa.github.io/sistempinjam/pinjam" src="" title="Pinjam Baru"></iframe>
-                </div>
-            </div>
-            
-        </div>
-    </div>
-
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar-left');
-            const navIcons = document.querySelectorAll('.nav-icon');
-            const contentFrames = document.querySelectorAll('.content-frame');
-            const mainContent = document.getElementById('main-content');
-            const toggleButton = document.getElementById('toggle-button');
-            const toggleIcon = document.getElementById('toggle-icon');
-            const toggleLabel = document.getElementById('toggle-label');
-            
-            // Elemen Pinjam Ganda
-            const iframePinjamGandaContainer = document.getElementById('iframe-pinjam-ganda-container');
-            const iframePinjamDaftar = document.getElementById('iframe-pinjam-daftar');
-            const iframePinjamBaru = document.getElementById('iframe-pinjam-baru');
-            const closePinjamGandaButton = document.getElementById('close-pinjam-ganda-button');
-            
-            // Elemen Absensi
-            const iframeAbsensi = document.getElementById('iframe-absensi');
-            
-            // 🚪 Elemen Logout Baru
-            const logoutNavItem = document.getElementById('logout-nav-item');
+        // Inisialisasi Firebase
+        const firebaseConfig = {
+            // GANTI DENGAN KONFIGURASI PROYEK FIREBASE ANDA SENDIRI
+            apiKey: "AIzaSyBoNUK_1_Hfqa8yHUVZ_TWOc28zkImWPbw",
+            authDomain: "perpustakaandata-c7726.firebaseapp.com",
+            databaseURL: "https://perpustakaandata-c7726-default-rtdb.firebaseio.com",
+            projectId: "perpustakaandata-c7726",
+            storageBucket: "perpustakaandata-c7726.firebasestorage.app",
+            messagingSenderId: "1099434992232",
+            appId: "1:1099434992232:web:90fbc3e17c7a4ae1a051dd"
+        };
+        firebase.initializeApp(firebaseConfig);
 
-            // --- FUNGSI LOGOUT (BARU) ---
-            logoutNavItem.addEventListener('click', function() {
-                // Hapus penanda login dari localStorage
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('adminUsername'); // Opsional
-                
-                // Arahkan kembali ke halaman login
-                window.location.href = 'index.html'; 
-            });
-            // ----------------------------
+        const database = firebase.database();
+        const loginForm = document.getElementById('loginForm');
+        const messageElement = document.getElementById('message');
 
+        const showMessage = (text, isSuccess = false) => {
+            messageElement.textContent = text;
+            messageElement.style.color = isSuccess ? 'var(--success-color)' : 'var(--error-color)';
+            messageElement.style.display = 'block';
+        };
 
-            // --- FUNGSI UTAMA TOGGLE SIDEBAR ---
-            function toggleSidebar() {
-                sidebar.classList.toggle('expanded');
-                
-                if (sidebar.classList.contains('expanded')) {
-                    toggleIcon.classList.remove('fa-angle-double-right');
-                    toggleIcon.classList.add('fa-angle-double-left');
-                    toggleLabel.textContent = 'Ciutkan Sidebar';
-                } else {
-                    toggleIcon.classList.remove('fa-angle-double-left');
-                    toggleIcon.classList.add('fa-angle-double-right');
-                    toggleLabel.textContent = 'Buka Sidebar';
-                }
-            }
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            messageElement.style.display = 'none';
 
-            // 1. LOGIKA TOMBOL KLIK
-            toggleButton.addEventListener('click', toggleSidebar);
-            
-            // --- FUNGSI TUTUP PINJAM GANDA ---
-            function closePinjamGanda() {
-                iframePinjamGandaContainer.classList.remove('active');
-                mainContent.classList.remove('pinjam-ganda-active'); 
-            }
-            closePinjamGandaButton.addEventListener('click', closePinjamGanda);
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
 
-            // --- FUNGSI MEMBUKA PINJAM GANDA ---
-            function openPinjamGanda() {
-                const iframesToLoad = [iframePinjamDaftar, iframePinjamBaru];
-                iframesToLoad.forEach(iframe => {
-                    const dataSrc = iframe.getAttribute('data-src');
-                    if (dataSrc && iframe.getAttribute('src') === '') {
-                        iframe.setAttribute('src', dataSrc);
-                    }
-                });
-
-                iframePinjamGandaContainer.classList.add('active');
-                mainContent.classList.add('pinjam-ganda-active');
-                
-                // Hapus kelas aktif/open dari semua item navigasi
-                navIcons.forEach(i => i.classList.remove('active', 'note-open', 'pinjam-open')); 
-                
-                // Pastikan Absensi (iframe di latar) adalah halaman yang aktif di latar
-                iframeAbsensi.classList.add('active');
-
-                // Jika Pinjam Ganda dibuka, ciutkan sidebar
-                if (sidebar.classList.contains('expanded')) {
-                    toggleSidebar(); 
-                }
-            }
-            // ------------------------------------------------------------------
-
-
-            // 2. LOGIKA KLIK NAVIGASI (Hanya Pindah Halaman)
-            navIcons.forEach(icon => {
-                icon.addEventListener('click', function() {
-                    const targetData = this.getAttribute('data-target');
+            // Membaca kredensial admin dari path 'admin' di Realtime Database
+            database.ref('admin').once('value')
+                .then((snapshot) => {
+                    const adminData = snapshot.val();
                     
-                    // Cek apakah item yang diklik adalah tombol logout
-                    if (this.id === 'logout-nav-item') {
-                        return; // Biarkan listener logout yang menangani
+                    if (!adminData) {
+                        showMessage('⚠️ Akun admin belum diatur. Akses ditolak.');
+                        return;
                     }
 
-                    // A. Kelola Kelas Aktif Navigasi 
-                    navIcons.forEach(i => i.classList.remove('active', 'note-open', 'pinjam-open'));
-                    this.classList.add('active');
-
-                    // B. Kelola Transisi Iframe (Menghilang semua)
-                    contentFrames.forEach(frame => {
-                        frame.classList.remove('active');
-                    });
-                    
-                    // Pastikan Pinjam Ganda ditutup jika kita pindah ke halaman lain
-                    closePinjamGanda();
-                    mainContent.classList.remove('pinjam-ganda-active'); 
-
-                    const targetFrame = document.getElementById(targetData); 
-                    if (targetFrame) {
-                        const dataSrc = targetFrame.getAttribute('data-src');
+                    // PENTING: Perbandingan kredensial plaintext di sisi klien. 
+                    // Harap perhatikan risiko keamanan yang ada.
+                    if (usernameInput === adminData.username && passwordInput === adminData.password) {
                         
-                        // Lazy Load: Muat URL hanya jika belum dimuat
-                        if (dataSrc && targetFrame.getAttribute('src') === '') {
-                            targetFrame.setAttribute('src', dataSrc);
-                        }
+                        // --- SESI BERHASIL: SIMPAN STATUS LOGIN ---
+                        localStorage.setItem('isLoggedIn', 'true');
+                        // ------------------------------------------
+
+                        showMessage('✅ Login Berhasil! Mengalihkan...', true); // true untuk warna sukses
                         
-                        // C. Memicu Transisi Muncul Iframe Penuh
                         setTimeout(() => {
-                           targetFrame.classList.add('active');
-                        }, 20); 
+                            // Mengalihkan ke halaman kerja
+                            window.location.href = 'workpage.html'; 
+                        }, 500); 
+                        
+                    } else {
+                        showMessage('❌ Username atau Password salah.');
                     }
-                    
-                    // D. Jika halaman standar di klik, ciutkan sidebar jika terbuka
-                    if (sidebar.classList.contains('expanded')) {
-                        toggleSidebar();
-                    }
-
+                })
+                .catch((error) => {
+                    showMessage('Terjadi kesalahan koneksi: ' + error.message);
+                    console.error("Login Error:", error);
                 });
-            });
-
-            // ------------------------------------------------------------------
-            // Listener untuk pesan dari Iframe (mekanisme postMessage)
-            // ------------------------------------------------------------------
-            window.addEventListener('message', function(event) {
-                // Hanya izinkan pemicu jika pesan datang dari domain Absensi
-                if (event.origin !== "https://perpustakaanlubangsa.github.io" && event.origin !== "http://perpustakaanlubangsa.github.io") {
-                    return; 
-                }
-                
-                if (event.data && event.data.action === 'openPinjamGanda') {
-                    if (!iframePinjamGandaContainer.classList.contains('active')) {
-                        openPinjamGanda();
-                    }
-                }
-            });
-            // ------------------------------------------------------------------
-            
-            // Inisialisasi: Pastikan container Pinjam Ganda disembunyikan saat startup
-            closePinjamGanda();
-
-            // Inisialisasi: Tetapkan Absensi sebagai default
-            const defaultActiveIcon = document.querySelector('[data-target="iframe-absensi"]');
-            const defaultActiveFrame = document.getElementById('iframe-absensi');
-            
-            if (defaultActiveIcon && defaultActiveFrame) {
-                // Menghapus semua kelas aktif/open lama
-                navIcons.forEach(i => i.classList.remove('active', 'note-open', 'pinjam-open'));
-                contentFrames.forEach(f => f.classList.remove('active'));
-                
-                // Menetapkan kembali yang default
-                defaultActiveIcon.classList.add('active');
-                defaultActiveFrame.classList.add('active');
-            }
         });
     </script>
-
 </body>
 </html>
