@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script>
-        // Cek status login di localStorage. Jika tidak ditemukan atau bukan 'true',
-        // pengguna segera dialihkan kembali ke halaman login (index.html).
+        // Cek status login di localStorage.
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'index.html'; 
         }
@@ -53,15 +52,25 @@
             top: 0;
             width: var(--sidebar-width); 
             min-width: var(--sidebar-width);
-            /* Diubah menjadi hitam pekat agar kontras dengan warna navigasi */
             background-color: #000000; 
             padding: 0; 
             display: flex;
             flex-direction: column; 
             justify-content: flex-start; 
             z-index: 100; 
-            transition: width var(--transition-duration) var(--snappy-ease), min-width var(--transition-duration) var(--snappy-ease);
+            /* Transisi normal + transisi untuk animasi startup */
+            transition: width var(--transition-duration) var(--snappy-ease), min-width var(--transition-duration) var(--snappy-ease), transform 0.6s var(--snappy-ease), opacity 0.5s ease-out; 
             height: 100%; 
+            
+            /* STATE AWAL ANIMASI STARTUP */
+            transform: translateX(-100px); 
+            opacity: 0;
+        }
+
+        /* STATE AKHIR ANIMASI STARTUP (Memicu slide-in dan fade-in) */
+        #sidebar-left.startup-visible {
+            transform: translateX(0);
+            opacity: 1;
         }
 
         #sidebar-left.expanded {
@@ -73,7 +82,6 @@
         /* TOMBOL TOGGLE DI DALAM SIDEBAR (Mencolok) */
         /* ------------------------------------------------ */
         #toggle-button {
-            /* MENGADAPTASI GAYA .nav-icon DENGAN SENTUHAN MENCERLAK */
             background-color: var(--color-sidebar-bg);
             color: white;
             border: none;
@@ -146,7 +154,7 @@
         .nav-list-wrapper { 
             display: flex; 
             flex-direction: column; 
-            flex-grow: 1; /* Agar mengambil sisa ruang di tengah */
+            flex-grow: 1;
             justify-content: flex-start; 
             padding: 0 10px 10px 10px; 
             height: 100%; 
@@ -160,7 +168,7 @@
         
         /* Wrapper untuk item logout/bawah (fleksibel) */
         .nav-group-bottom {
-            margin-top: auto; /* Mendorong ke bawah */
+            margin-top: auto; 
         }
 
         .nav-list-wrapper > .nav-icon:first-of-type {
@@ -179,8 +187,19 @@
             color: cyan; box-sizing: border-box; 
             display: flex; align-items: center; 
             border-radius: 6px; 
-            transition: all 0.2s ease-out;
+            /* Transisi normal + transisi untuk animasi startup */
+            transition: all 0.2s ease-out, transform 0.6s var(--snappy-ease), opacity 0.6s ease-out; 
             flex-shrink: 0; 
+            
+            /* STATE AWAL ANIMASI NAVIGASI STARTUP */
+            transform: translateX(-30px);
+            opacity: 0;
+        }
+        
+        /* STATE AKHIR ANIMASI NAVIGASI STARTUP */
+        .nav-icon.startup-slide {
+            transform: translateX(0);
+            opacity: 1;
         }
 
         /* Gaya khusus untuk tombol logout */
@@ -256,7 +275,7 @@
 
 
         /* ------------------------------------------------ */
-        /* KONTEN UTAMA & IFRAME (Tidak ada perubahan di sini) */
+        /* KONTEN UTAMA & IFRAME */
         /* ------------------------------------------------ */
 
         #main-container { 
@@ -269,7 +288,18 @@
             overflow: hidden; 
             padding: 0; 
             z-index: 50; 
-            transition: margin-left var(--transition-duration) var(--snappy-ease), width var(--transition-duration) var(--snappy-ease);
+            /* Transisi normal + transisi untuk animasi startup */
+            transition: margin-left var(--transition-duration) var(--snappy-ease), width var(--transition-duration) var(--snappy-ease), transform 0.6s var(--snappy-ease), opacity 0.6s ease-out; 
+            
+            /* STATE AWAL ANIMASI STARTUP */
+            transform: translateX(100px); 
+            opacity: 0;
+        }
+        
+        /* STATE AKHIR ANIMASI STARTUP */
+        #main-container.startup-visible {
+            transform: translateX(0);
+            opacity: 1;
         }
         
         #sidebar-left:not(.expanded) ~ #main-container {
@@ -298,28 +328,38 @@
         .content-frame { 
             z-index: 10; pointer-events: none; 
             opacity: 0; 
-            transform: scale(1); 
-            transition: opacity 0.2s ease-out, transform 0.3s ease-out, filter 0.4s ease-out; 
+            /* ⭐ STATE AWAL: Sedikit lebih kecil (mengembang saat masuk) ⭐ */
+            transform: scale(0.95); 
+            
+            /* Transisi cubic-bezier untuk efek sentak/kenyal (overshoot) */
+            transition: opacity 0.3s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            filter: none;
         }
         
         .content-frame.active { 
             display: block; pointer-events: auto; 
             opacity: 1; 
+            /* ⭐ STATE AKHIR: Kembali ke ukuran normal (1.0) ⭐ */
             transform: scale(1);
-            transition: opacity 0.2s 0.05s ease-in, transform 0.3s ease-in, filter 0.4s ease-in; 
+            
+            /* Transisi muncul */
+            transition: opacity 0.3s 0.05s ease-in, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            filter: none;
         }
         
         /* STYLE KONTEN BELAKANG (Saat Pinjam Ganda aktif) DIKEMBALIKAN */
         #main-content.pinjam-ganda-active > .content-frame.active:not(.clipped-frame) {
             filter: blur(5px) brightness(0.7); 
-            transform: scale(1.05); 
+            transform: scale(1.05); /* Konten latar belakang lebih besar */
             pointer-events: none; 
             opacity: 1; 
             z-index: 5; 
+            /* Transisi normal untuk latar */
+            transition: filter 0.4s ease-out, transform 0.4s cubic-bezier(0.445, 0.05, 0.55, 0.95); 
         }
         
 
-        /* KHUSUS: CONTAINER PINJAM GANDA (FLEKSIBEL DENGAN MARGIN 40px KELILING) DIKEMBALIKAN */
+        /* KHUSUS: CONTAINER PINJAM GANDA */
         #iframe-pinjam-ganda-container {
             position: absolute; 
             left: 40px; 
@@ -459,7 +499,7 @@
 </head>
 <body>
     
-    <div id="sidebar-left" class="expanded"> 
+    <div id="sidebar-left" class="expanded">
         
         <div class="nav-list-wrapper">
             
@@ -522,6 +562,7 @@
             const navIcons = document.querySelectorAll('.nav-icon');
             const contentFrames = document.querySelectorAll('.content-frame');
             const mainContent = document.getElementById('main-content');
+            const mainContainer = document.getElementById('main-container');
             const toggleButton = document.getElementById('toggle-button');
             const toggleIcon = document.getElementById('toggle-icon');
             const toggleLabel = document.getElementById('toggle-label');
@@ -537,6 +578,29 @@
             
             // 🚪 Elemen Logout Baru
             const logoutNavItem = document.getElementById('logout-nav-item');
+
+            // ------------------------------------------------------------------
+            // ⭐ FUNGSI INISIALISASI ANIMASI STARTUP BARU ⭐
+            // (Memastikan elemen sidebar dan nav item TIDAK hilang)
+            // ------------------------------------------------------------------
+            function runStartupAnimation() {
+                // 1. Animasi Sidebar dan Konten Utama
+                sidebar.classList.add('startup-visible');
+                mainContainer.classList.add('startup-visible');
+                
+                // 2. Animasi Item Navigasi (Staggered Effect)
+                const navItems = document.querySelectorAll('.nav-icon');
+                navItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('startup-slide');
+                    }, 50 * index + 300); // Penundaan: 300ms (setelah sidebar muncul) + 50ms per item
+                });
+                
+                // Catatan: Blok setTimeout untuk menghapus kelas animasi telah dihapus
+                // agar elemen tetap di posisi akhirnya.
+            }
+            // ------------------------------------------------------------------
+
 
             // --- FUNGSI LOGOUT (BARU) ---
             logoutNavItem.addEventListener('click', function() {
@@ -634,7 +698,7 @@
                             targetFrame.setAttribute('src', dataSrc);
                         }
                         
-                        // C. Memicu Transisi Muncul Iframe Penuh
+                        // C. Memicu Transisi Muncul Iframe Penuh (Pulse and Snap)
                         setTimeout(() => {
                            targetFrame.classList.add('active');
                         }, 20); 
@@ -681,6 +745,9 @@
                 defaultActiveIcon.classList.add('active');
                 defaultActiveFrame.classList.add('active');
             }
+            
+            // ⭐ Panggil Fungsi Animasi Startup di akhir DOMContentLoaded
+            runStartupAnimation();
         });
     </script>
 
