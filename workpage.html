@@ -7,6 +7,14 @@
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <script>
+        // Cek status login di localStorage. Jika tidak ditemukan atau bukan 'true',
+        // pengguna segera dialihkan kembali ke halaman login (index.html).
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'index.html'; 
+        }
+    </script>
+    
     <style>
         /* Elegan Dark Sidebar Murni (Dengan Hover/Sentuh Bouncy/Kenyal) */
         :root {
@@ -20,7 +28,7 @@
             --transition-duration: 0.3s; 
             --snappy-ease: cubic-bezier(0.17, 0.82, 0.44, 0.98); 
         }
-
+        
         /* ------------------------------------------------ */
         /* Perbaikan Global: BODY sebagai Container Penuh dan Relative */
         /* ------------------------------------------------ */
@@ -45,7 +53,8 @@
             top: 0;
             width: var(--sidebar-width); 
             min-width: var(--sidebar-width);
-            background-color: black; 
+            /* Diubah menjadi hitam pekat agar kontras dengan warna navigasi */
+            background-color: #000000; 
             padding: 0; 
             display: flex;
             flex-direction: column; 
@@ -137,14 +146,23 @@
         .nav-list-wrapper { 
             display: flex; 
             flex-direction: column; 
-            flex-grow: 1; 
+            flex-grow: 1; /* Agar mengambil sisa ruang di tengah */
             justify-content: flex-start; 
             padding: 0 10px 10px 10px; 
             height: 100%; 
             box-sizing: border-box; 
         }
         
-        /* Hapus margin-top pada nav item pertama agar menempel di bawah tombol toggle */
+        /* Wrapper untuk item navigasi utama (fleksibel) */
+        .nav-group-main {
+            flex-grow: 1;
+        }
+        
+        /* Wrapper untuk item logout/bawah (fleksibel) */
+        .nav-group-bottom {
+            margin-top: auto; /* Mendorong ke bawah */
+        }
+
         .nav-list-wrapper > .nav-icon:first-of-type {
              margin-top: 0; 
         }
@@ -164,6 +182,21 @@
             transition: all 0.2s ease-out;
             flex-shrink: 0; 
         }
+
+        /* Gaya khusus untuk tombol logout */
+        #logout-nav-item {
+            color: #ef5350; /* Merah untuk logout */
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        #logout-nav-item:hover {
+            background-color: rgba(239, 83, 80, 0.15);
+            color: white;
+        }
+        #logout-nav-item i {
+            color: inherit; /* Ikuti warna induk */
+        }
+
 
         .nav-icon i { 
             display: flex; 
@@ -187,6 +220,7 @@
             white-space: nowrap; overflow: hidden; max-width: 0; 
             margin-left: -15px; 
             opacity: 0; font-size: 14px; font-weight: 500;
+            color: white; /* Default text color */
             transition: max-width 0.3s ease-out, opacity 0.1s ease-out 0.05s, margin-left 0.3s ease-out;
         }
 
@@ -207,6 +241,9 @@
             background-color: rgba(0, 188, 212, 0.15); 
             box-shadow: inset 5px 0 0 0 var(--color-accent-cyan); 
         }
+        .nav-icon.active .nav-label {
+            color: var(--color-accent-cyan);
+        }
         
         /* Gaya khusus pinjam dikembalikan */
         .nav-icon.pinjam-toggle i {
@@ -219,7 +256,7 @@
 
 
         /* ------------------------------------------------ */
-        /* KONTEN UTAMA & IFRAME */
+        /* KONTEN UTAMA & IFRAME (Tidak ada perubahan di sini) */
         /* ------------------------------------------------ */
 
         #main-container { 
@@ -431,17 +468,23 @@
                 <span id="toggle-label">Ciutkan Sidebar</span>
             </button>
             
-            <div class="nav-icon active" data-target="iframe-absensi" title="Halaman Absensi"><i class="fas fa-clipboard-check"></i><span class="nav-label">Halaman Absensi</span></div>
+            <div class="nav-group-main">
+                <div class="nav-icon active" data-target="iframe-absensi" title="Halaman Absensi"><i class="fas fa-clipboard-check"></i><span class="nav-label">Halaman Absensi</span></div>
+                
+                <div class="nav-icon" data-target="iframe-sistem-pinjam" title="Sistem Peminjaman"><i class="fas fa-book-reader"></i><span class="nav-label">Sistem Peminjaman</span></div>
+                
+                <div class="nav-icon" data-target="iframe-library" title="Pencarian Library"><i class="fas fa-search"></i><span class="nav-label">Pencarian Library</span></div>
+                <div class="nav-icon" data-target="iframe-pengunjung" title="Beranda Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Beranda Pengunjung</span></div>
+                <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan"><i class="fas fa-atlas"></i> <span class="nav-label">Pedoman Penggunaan</span></div>
+                
+                <div class="nav-icon" data-target="iframe-catatan-full" title="Catatan Pustakawan"><i class="fas fa-book-open"></i><span class="nav-label">Catatan Pustakawan</span></div>
+                
+                <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi"><i class="fas fa-calendar-alt"></i><span class="nav-label">Jadwal Absensi</span></div>
+            </div>
             
-            <div class="nav-icon" data-target="iframe-sistem-pinjam" title="Sistem Peminjaman"><i class="fas fa-book-reader"></i><span class="nav-label">Sistem Peminjaman</span></div>
-            
-            <div class="nav-icon" data-target="iframe-library" title="Pencarian Library"><i class="fas fa-search"></i><span class="nav-label">Pencarian Library</span></div>
-            <div class="nav-icon" data-target="iframe-pengunjung" title="Beranda Pengunjung"><i class="fas fa-users"></i><span class="nav-label">Beranda Pengunjung</span></div>
-            <div class="nav-icon" data-target="iframe-pedoman" title="Pedoman Penggunaan"><i class="fas fa-atlas"></i> <span class="nav-label">Pedoman Penggunaan</span></div>
-            
-            <div class="nav-icon" data-target="iframe-catatan-full" title="Catatan Pustakawan"><i class="fas fa-book-open"></i><span class="nav-label">Catatan Pustakawan</span></div>
-            
-            <div class="nav-icon" data-target="iframe-jadwal" title="Jadwal Absensi"><i class="fas fa-calendar-alt"></i><span class="nav-label">Jadwal Absensi</span></div>
+            <div class="nav-group-bottom">
+                 <div class="nav-icon" id="logout-nav-item" title="Keluar dari Sistem"><i class="fas fa-sign-out-alt"></i><span class="nav-label">Keluar (Logout)</span></div>
+            </div>
         </div>
         
     </div>
@@ -488,10 +531,24 @@
             const iframePinjamDaftar = document.getElementById('iframe-pinjam-daftar');
             const iframePinjamBaru = document.getElementById('iframe-pinjam-baru');
             const closePinjamGandaButton = document.getElementById('close-pinjam-ganda-button');
-            // const navIconPinjamGanda = document.querySelector('[data-target="iframe-pinjam-ganda-toggle"]'); // Dihapus/Tidak dipakai lagi
             
             // Elemen Absensi
             const iframeAbsensi = document.getElementById('iframe-absensi');
+            
+            // 🚪 Elemen Logout Baru
+            const logoutNavItem = document.getElementById('logout-nav-item');
+
+            // --- FUNGSI LOGOUT (BARU) ---
+            logoutNavItem.addEventListener('click', function() {
+                // Hapus penanda login dari localStorage
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('adminUsername'); // Opsional
+                
+                // Arahkan kembali ke halaman login
+                window.location.href = 'index.html'; 
+            });
+            // ----------------------------
+
 
             // --- FUNGSI UTAMA TOGGLE SIDEBAR ---
             function toggleSidebar() {
@@ -514,7 +571,6 @@
             // --- FUNGSI TUTUP PINJAM GANDA ---
             function closePinjamGanda() {
                 iframePinjamGandaContainer.classList.remove('active');
-                // navIconPinjamGanda.classList.remove('pinjam-open'); // Dihapus
                 mainContent.classList.remove('pinjam-ganda-active'); 
             }
             closePinjamGandaButton.addEventListener('click', closePinjamGanda);
@@ -551,6 +607,11 @@
                 icon.addEventListener('click', function() {
                     const targetData = this.getAttribute('data-target');
                     
+                    // Cek apakah item yang diklik adalah tombol logout
+                    if (this.id === 'logout-nav-item') {
+                        return; // Biarkan listener logout yang menangani
+                    }
+
                     // A. Kelola Kelas Aktif Navigasi 
                     navIcons.forEach(i => i.classList.remove('active', 'note-open', 'pinjam-open'));
                     this.classList.add('active');
