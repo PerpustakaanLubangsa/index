@@ -92,12 +92,18 @@
         }
 
         #sidebar-header img {
-            width: 40px; /* Ukuran logo */
-            height: 40px;
+            width: 32px; /* Ukuran logo diperkecil */
+            height: 32px; /* Ukuran logo diperkecil */
             object-fit: cover;
-            border-radius: 6px;
+            
+            border-radius: 50%; /* Membuat bentuk lingkaran */
+            background-color: white; /* Latar belakang putih di dalam lingkaran */
+            border: 2px solid var(--color-accent-cyan); /* Border cyan */
+            padding: 2px; /* Padding untuk memberikan ruang antara border dan gambar */
+            
             flex-shrink: 0;
             margin-right: 10px; /* Jarak antara logo dan teks */
+            transition: all 0.3s var(--snappy-ease); /* Transisi untuk perubahan ukuran/bentuk */
         }
 
         .header-text-group {
@@ -144,6 +150,10 @@
         }
         #sidebar-left:not(.expanded) #sidebar-header img {
             margin-right: 0;
+            width: 38px; /* Sedikit lebih besar saat ciut agar lebih menonjol */
+            height: 38px; /* Sedikit lebih besar saat ciut agar lebih menonjol */
+            padding: 0; /* Hapus padding saat ciut agar border langsung menempel */
+            border-width: 3px; /* Border lebih tebal saat ciut */
         }
 
 
@@ -205,8 +215,8 @@
             white-space: nowrap;
             overflow: hidden;
             max-width: 0;
-            opacity: 0;
             margin-left: -15px; 
+            opacity: 0; 
             
             transition: max-width 0.3s ease-out, opacity 0.1s ease-out 0.05s, margin-left 0.3s ease-out;
         }
