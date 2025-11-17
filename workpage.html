@@ -77,12 +77,82 @@
             width: var(--sidebar-width-expanded);
             min-width: var(--sidebar-width-expanded);
         }
+        
+        /* ------------------------------------------------ */
+        /* HEADER LOGO BARU (Paling Atas) */
+        /* ------------------------------------------------ */
+        #sidebar-header {
+            display: flex;
+            align-items: center;
+            height: 60px; /* Tinggi header */
+            padding: 0 10px;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            transition: all 0.3s var(--snappy-ease);
+        }
+
+        #sidebar-header img {
+            width: 40px; /* Ukuran logo */
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+            margin-right: 10px; /* Jarak antara logo dan teks */
+        }
+
+        .header-text-group {
+            display: flex;
+            flex-direction: column; /* PENTING: Membuat teks berjejer ke bawah */
+            justify-content: center;
+            overflow: hidden;
+            max-width: 180px;
+            opacity: 1;
+            transform: translateX(0);
+            /* Transisi untuk teks saat sidebar ciut */
+            transition: max-width 0.3s ease-out, opacity 0.1s ease-out 0.05s, transform 0.3s ease-out;
+        }
+
+        .header-title {
+            color: white;
+            font-size: 16px; /* Ukuran teks utama */
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            line-height: 1.2;
+        }
+
+        .header-version {
+            color: var(--color-accent-cyan); /* Warna mencolok */
+            font-weight: 700;
+            font-size: 10px; /* Ukuran teks kecil */
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+
+        /* Sembunyikan Teks Header saat sidebar ciut */
+        #sidebar-left:not(.expanded) .header-text-group {
+            max-width: 0;
+            opacity: 0;
+            transform: translateX(-15px);
+            transition: max-width 0.3s ease-out, opacity 0.1s ease-out, transform 0.3s ease-out;
+        }
+
+        /* PENTING: Posisikan logo di tengah saat ciut */
+        #sidebar-left:not(.expanded) #sidebar-header {
+            justify-content: center;
+            padding: 0;
+        }
+        #sidebar-left:not(.expanded) #sidebar-header img {
+            margin-right: 0;
+        }
+
 
         /* ------------------------------------------------ */
         /* TOMBOL TOGGLE DI DALAM SIDEBAR (Mencolok) */
         /* ------------------------------------------------ */
         #toggle-button {
-            background-color: var(--color-sidebar-bg);
+            /* Warna latar diubah sedikit agar toggle berbeda dari header */
+            background-color: rgba(255, 255, 255, 0.05);
             color: white;
             border: none;
             cursor: pointer;
@@ -154,10 +224,9 @@
         .nav-list-wrapper { 
             display: flex; 
             flex-direction: column; 
-            flex-grow: 1;
+            flex-grow: 1; 
             justify-content: flex-start; 
             padding: 0 10px 10px 10px; 
-            height: 100%; 
             box-sizing: border-box; 
         }
         
@@ -206,7 +275,7 @@
         #logout-nav-item {
             color: #ef5350; /* Merah untuk logout */
             margin-top: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 5px; 
         }
         #logout-nav-item:hover {
             background-color: rgba(239, 83, 80, 0.15);
@@ -274,6 +343,12 @@
         }
 
 
+        /* ------------------------------------------------ */
+        /* Hapus Gaya Footer yang lama */
+        /* ------------------------------------------------ */
+        #sidebar-footer {
+            display: none;
+        }
         /* ------------------------------------------------ */
         /* KONTEN UTAMA & IFRAME */
         /* ------------------------------------------------ */
@@ -501,6 +576,13 @@
     
     <div id="sidebar-left" class="expanded">
         
+        <div id="sidebar-header">
+            <img src="logo.png" alt="Logo">
+            <div class="header-text-group">
+                <span class="header-title">Perpustakaan Lubangsa</span>
+                <span class="header-version">Sistem V 1.0</span>
+            </div>
+        </div>
         <div class="nav-list-wrapper">
             
             <button id="toggle-button">
