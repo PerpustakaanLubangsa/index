@@ -3,183 +3,194 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Perpustakaan Lubangsa - Jam Cybertronian</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Dashboard Perpustakaan Lubangsa</title>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --color-card-background: #ffffff; 
-            --color-text-dark: #2c3e50; 
-            --color-dark-text: #e9ecef; 
-            --color-dark-bg: #DDF5FD; 
-            --color-sidebar-bg: #101820; 
-            --color-primary-neon: #00e5ff; 
-            --color-danger: #ff4d4d;
-            --clock-height: 55px;
+            --color-gold: #d4af37;
+            --color-gold-glow: rgba(212, 175, 55, 0.4);
+            --color-dark-bg: #05070a;
+            --color-card-bg: #11141b;
+            --color-sidebar-bg: #0a0c10;
+            --clock-height: 60px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            transition: all 0.3s ease;
         }
 
         html, body {
             height: 100%;
             overflow: hidden;
-            background-color: var(--color-dark-bg); 
-            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-dark-bg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex;
         }
 
         .master-card-container {
-            width: 100vw; 
+            width: 100vw;
             height: 100vh;
             display: grid;
-            grid-template-columns: 0.43fr 1fr; 
+            grid-template-columns: 420px 1fr;
             overflow: hidden;
+            position: relative;
         }
         
+        /* Garis Vertikal Emas Pembatas */
+        .master-card-container::after {
+            content: "";
+            position: absolute;
+            left: 420px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--color-gold);
+            box-shadow: 0 0 15px var(--color-gold-glow), 0 0 5px var(--color-gold);
+            z-index: 50;
+        }
+
         .sidebar-left {
-            background-color: var(--color-sidebar-bg); 
-            color: var(--color-dark-text);
+            background-color: var(--color-sidebar-bg);
+            color: #ffffff;
             display: flex;
             flex-direction: column;
-            padding: 20px 0 0 0;
-            gap: 15px; 
-            border-right: 4px solid var(--color-primary-neon);
+            padding: 0;
+            gap: 0;
+            z-index: 10;
         }
         
         #clock-container {
             text-align: center;
-            padding: 0 20px 20px 20px; 
-            margin-bottom: 5px; 
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-            min-height: 130px;
+            padding: 30px 20px;
+            background: linear-gradient(to bottom, rgba(212, 175, 55, 0.05), transparent);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            min-height: 160px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
         
-        .time-display { display: flex; justify-content: center; gap: 8px; margin-bottom: 5px; }
+        .time-display { display: flex; justify-content: center; gap: 6px; }
         
         .flip-card { 
             font-family: 'Orbitron', monospace;
-            font-size: 2.5em; 
-            font-weight: 700; 
+            font-size: 2.2em;
+            font-weight: 700;
             line-height: var(--clock-height);
-            height: var(--clock-height); 
-            width: 50px; 
-            background-color: #0d121c; 
-            border-radius: 6px;
-            color: var(--color-primary-neon); 
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
-            position: relative; 
-            border: 1px solid var(--color-primary-neon); 
+            height: var(--clock-height);
+            width: 48px;
+            background-color: #11141b;
+            border-radius: 8px;
+            color: var(--color-gold);
+            box-shadow: 0 0 15px var(--color-gold-glow);
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.3);
         }
         
         .date-small { 
-            font-size: 0.85em; 
-            letter-spacing: 2px; 
+            font-size: 0.75em;
+            letter-spacing: 2px;
             font-family: 'Orbitron', monospace;
-            display: block;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            margin-top: 15px;
+            opacity: 0.8;
         }
 
+        /* Status Tutup Metallic Gold */
         .closed-card {
-            background: rgba(255, 77, 77, 0.1);
-            border: 2px solid var(--color-danger);
+            border: 2px solid #d4af37;
             border-radius: 12px;
-            padding: 25px;
-            width: 100%;
-            text-align: center;
-            animation: pulse-danger 2s infinite;
+            padding: 15px 45px;
+            background: linear-gradient(135deg, #0a0c10 0%, #1a1d24 45%, #d4af37 50%, #1a1d24 55%, #0a0c10 100%);
+            background-size: 300% 300%;
+            background-position: 100% 100%;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2), inset 0 0 10px rgba(212, 175, 55, 0.1);
             display: none;
         }
 
-        @keyframes pulse-danger {
-            0% { box-shadow: 0 0 5px rgba(255, 77, 77, 0.4); }
-            50% { box-shadow: 0 0 20px rgba(255, 77, 77, 0.7); }
-            100% { box-shadow: 0 0 5px rgba(255, 77, 77, 0.4); }
-        }
-
         .closed-card h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8em;
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
             font-weight: 900;
-            color: var(--color-danger);
-            letter-spacing: 4px;
+            background: linear-gradient(to bottom, #fceabb 0%, #d4af37 40%, #b8952d 60%, #fceabb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
             margin: 0;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
         }
 
-        .iframe-area.kunjungan {
-            flex-grow: 1; 
-            margin: 0;
-            padding: 0;
-        }
-
-        .iframe-area.kunjungan .content-iframe {
-            width: 100%; 
-            height: 100%;
-            border: none;
-            background: rgba(255, 255, 255, 0.05); 
-        }
-
-        .main-content-right {
-            display: flex;
-            flex-direction: column;
+        .iframe-area {
+            flex-grow: 1;
+            position: relative;
             overflow: hidden;
         }
 
-        .iframe-area.pencarian {
-            flex-grow: 1;
-        }
-
-        .iframe-area.pencarian .content-iframe {
+        .iframe-area .content-iframe {
             width: 100%;
             height: 100%;
             border: none;
-            background: var(--color-card-background); 
         }
 
-        @media (max-width: 1000px) {
-            .master-card-container { grid-template-columns: 1fr; }
-            .sidebar-left { min-height: 40vh; border-right: none; border-bottom: 4px solid var(--color-primary-neon); }
+        .main-content-right {
+            background-color: var(--color-dark-bg);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        @media (max-width: 1100px) {
+            .master-card-container { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+            .master-card-container::after { 
+                left: 0; right: 0; top: auto; bottom: auto;
+                width: 100%; height: 2px;
+            }
+            .sidebar-left { border-right: none; height: auto; }
         }
     </style>
 </head>
 <body>
 
     <main class="master-card-container">
-        <div class="sidebar-left">
+        <aside class="sidebar-left">
             <header id="clock-container">
                 <div id="active-clock" class="time-display">
                     <span id="h1" class="flip-card">0</span>
                     <span id="h2" class="flip-card">0</span>
-                    <span style="font-size: 2.5em; line-height: var(--clock-height); color: var(--color-primary-neon);">:</span>
+                    <span style="font-size: 2em; line-height: var(--clock-height); color: var(--color-gold); margin: 0 2px;">:</span>
                     <span id="m1" class="flip-card">0</span>
                     <span id="m2" class="flip-card">0</span>
-                    <span style="font-size: 2.5em; line-height: var(--clock-height); color: var(--color-primary-neon);">:</span>
-                    <span id="s1" class="flip-card">0</span>
-                    <span id="s2" class="flip-card">0</span>
+                    <span style="font-size: 2em; line-height: var(--clock-height); color: var(--color-gold); margin: 0 2px; opacity: 0.5;">:</span>
+                    <span id="s1" class="flip-card" style="opacity: 0.7; font-size: 1.8em;">0</span>
+                    <span id="s2" class="flip-card" style="opacity: 0.7; font-size: 1.8em;">0</span>
                 </div>
                 
                 <div id="closed-status" class="closed-card">
                     <h2>JAM TUTUP</h2>
                 </div>
 
-                <span id="status-text" class="date-small" style="margin-top: 10px;">Memuat...</span>
+                <span id="status-text" class="date-small">...</span>
             </header>
             
-            <div class="iframe-area kunjungan">
+            <div class="iframe-area">
                  <iframe src="https://perpustakaanlubangsa.github.io/pengunjung" class="content-iframe"></iframe>
             </div>
-        </div>
+        </aside>
 
         <section class="main-content-right">
-            <div class="iframe-area pencarian">
+            <div class="iframe-area">
                 <iframe src="https://perpustakaanlubangsa.github.io/pencarian" class="content-iframe"></iframe>
             </div>
         </section>
@@ -213,7 +224,7 @@
                 document.getElementById('s1').textContent = parts[2].charAt(0);
                 document.getElementById('s2').textContent = parts[2].charAt(1);
                 
-                const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
                 statusText.textContent = now.toLocaleDateString('id-ID', dateOptions);
                 statusText.style.display = 'block';
             } else {
